@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#1264e8">
+<title>INTI MITRA - Customer App</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Leaflet Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7fc;color:#1e293b;font-family:Arial,sans-serif;padding-bottom:90px;user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+
+header{position:sticky;top:0;z-index:1000;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.top{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo-container{width:44px;height:44px;border-radius:12px;background:#0f172a;display:flex;align-items:center;justify-content:center;border:2px solid #60a5fa;overflow:hidden}
+.brand-logo-img{width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
+.logoText{font-size:20px;font-weight:900;color:#fff}
+
+.header-actions{display:flex;align-items:center;gap:8px}
+select.lang-select{background:#334155;color:#fff;border:1px solid #60a5fa;padding:6px 8px;border-radius:8px;font-weight:bold;outline:none;font-size:12px}
+
+.bell-btn{position:relative;background:#334155;border:none;color:#fff;font-size:16px;padding:6px 10px;border-radius:10px;cursor:pointer}
+.bell-badge{position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:10px}
+
+.install-bar{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:bold;border-bottom:1px solid #38bdf8}
+.install-btn{background:#fff;color:#0369a1;border:none;padding:6px 14px;border-radius:8px;font-weight:bold;cursor:pointer}
+
+.sos-voice-bar{display:flex;gap:10px;margin-top:10px}
+.sos-btn{background:#dc2626;color:#fff;border:none;padding:8px 14px;border-radius:10px;font-weight:bold;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.voice-btn{flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:8px 12px;border-radius:10px;font-weight:bold;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+
+main{max-width:750px;margin:auto;padding:16px}
+.card{background:#fff;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,0.06);padding:20px;margin-bottom:16px}
+.login{text-align:center;padding:24px;max-width:420px;margin:20px auto}
+.loginLogoBox{width:90px;height:90px;background:#0f172a;margin:0 auto 15px;border-radius:22px;display:flex;align-items:center;justify-content:center;border:3px solid #60a5fa;overflow:hidden}
+.login-brand-img{width:100%;height:100%;object-fit:contain;background:#fff;padding:4px}
+
+input,textarea,button{font:inherit}
+input,textarea{width:100%;padding:14px;margin:8px 0;border:1px solid #cbd5e1;border-radius:14px;outline:none;background:#f8fafc}
+input:focus,textarea:focus{border-color:#2563eb;background:#fff}
+textarea{min-height:80px;resize:none}
+
+button.primary{background:#2563eb;color:#fff;width:100%;padding:14px;border:none;border-radius:14px;font-weight:bold;margin-top:8px;cursor:pointer}
+button.secondary-gps{background:#0284c7;color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:bold;cursor:pointer;width:100%;margin-bottom:8px}
+button.back{background:#e2e8f0;color:#334155;border:none;padding:10px 16px;border-radius:12px;font-weight:bold;margin-bottom:14px;cursor:pointer}
+
+#mapContainer{width:100%;height:220px;border-radius:14px;margin:10px 0;border:2px solid #cbd5e1;z-index:10}
+
+.folder-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.folder-btn{padding:12px;border:2px solid #e2e8f0;background:#fff;border-radius:14px;font-weight:bold;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:#475569}
+.folder-btn.active{border-color:#2563eb;background:#eff6ff;color:#2563eb}
+
+.welcome{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border-radius:22px;padding:22px;margin-bottom:16px}
+.services{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.service{background:#fff;border:1px solid #e2e8f0;border-radius:18px;text-align:center;padding:20px 10px;cursor:pointer}
+.service .icon{font-size:38px;margin-bottom:8px}
+
+.custom-work-box{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px dashed #2563eb;border-radius:18px;padding:16px;text-align:center;margin-top:16px}
+
+.worker{background:#fff;border-radius:18px;padding:16px;margin-bottom:12px;border:1px solid #e2e8f0}
+.book{width:100%;background:#2563eb;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:bold;margin-top:10px;cursor:pointer}
+
+.qr-payment-card{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px dashed #2563eb;border-radius:18px;padding:18px;text-align:center;margin:12px 0}
+.qr-img{width:180px;height:180px;margin:10px auto;border-radius:12px;background:#fff;padding:8px}
+.upi-copy-box{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1.5px solid #60a5fa;border-radius:12px;padding:8px 12px;margin:10px 0;font-size:13px}
+
+.nav{position:fixed;bottom:0;left:0;right:0;height:80px;background:#fff;display:grid;grid-template-columns:repeat(4,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.08);z-index:500}
+.nav button{background:transparent;color:#64748b;border:none;font-size:12px;font-weight:600;cursor:pointer}
+.nav button b{display:block;font-size:24px;margin-bottom:2px}
+.nav .active{color:#2563eb}
+
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:14px;z-index:3000}
+</style>
+</head>
+
+<body>
+
+<div id="pwaInstallBanner" class="install-bar hidden">
+  <span>📲 INTI MITRA యాప్‌ను ఇన్‌స్టాల్ చేసుకోండి</span>
+  <button class="install-btn" onclick="installPWA()">Install App</button>
+</div>
+
+<header>
+<div class="top">
+  <div class="brand">
+    <div class="brand-logo-container">
+      <span id="brandFallbackIcon" style="font-size:24px;">🏛️</span>
+      <img id="brandLogoImg" class="brand-logo-img hidden" alt="Logo">
+    </div>
+    <div class="logoText">INTI MITRA</div>
+  </div>
+  <div class="header-actions">
+    <button class="bell-btn" onclick="page('notifications')">🔔<span class="bell-badge hidden" id="custBellBadge">0</span></button>
+    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+      <option value="te">తెలుగు</option>
+      <option value="en">English</option>
+      <option value="hi">हिंदी</option>
+    </select>
+    <div id="headerUser" style="font-size:13px; font-weight:bold;">Guest</div>
+  </div>
+</div>
+
+<div class="sos-voice-bar">
+  <button class="sos-btn" onclick="triggerCustomerSOS()">🚨 SOS</button>
+  <button class="voice-btn" onclick="startVoiceAssistant()">🎤 మాట్లాడి వెతకండి</button>
+</div>
+</header>
+
+<section id="login" class="login">
+<div class="card">
+<div class="loginLogoBox">
+  <span id="loginFallbackIcon" style="font-size:46px;">🏛️</span>
+  <img id="loginBrandImg" class="login-brand-img hidden" alt="Login Brand Logo">
+</div>
+<h2>INTI MITRA</h2>
+<p style="font-size:13px; color:#64748b; margin-top:-6px;">కస్టమర్ సురక్షిత లాగిన్</p>
+
+<div id="loginInputFields">
+  <input id="name" placeholder="మీ పూర్తి పేరు (Full Name)">
+  <input id="phone" maxlength="10" inputmode="numeric" placeholder="10 అంకెల మొబైల్ నంబర్">
+  <button class="primary" onclick="sendOTP()">📱 Get Secure OTP</button>
+</div>
+
+<div id="otpSection" class="hidden" style="margin-top:15px;">
+  <p style="font-size:13px; color:#1e293b; margin:0 0 6px 0;">6-అంకెల కోడ్ నమోదు చేయండి:</p>
+  <input id="otp" maxlength="6" inputmode="numeric" placeholder="Enter OTP" style="text-align:center; font-size:20px; font-weight:bold; letter-spacing:4px;">
+  <button class="primary" onclick="verifyOTP()">✅ Verify & Enter</button>
+  <button class="primary" style="background:#64748b; margin-top:8px;" onclick="resendOrChangeNumber()">← మార్చండి</button>
+</div>
+</div>
+</section>
+
+<main id="app" class="hidden">
+
+<section id="home">
+<div class="welcome">
+<h2 style="margin:0 0 6px 0;">నమస్కారం <span id="homeName">Customer</span> 👋</h2>
+<p style="margin:0; font-size:14px;">మగవారు & ఆడవారు చేయగల సేవలు లేదా ఇతర ఏ పని అయినా ఎంచుకోండి</p>
+</div>
+
+<div class="folder-tabs">
+  <button class="folder-btn active" id="tabWorkers" onclick="switchCategory('workers')">🛠️ నిపుణులు & టెక్నీషియన్స్</button>
+  <button class="folder-btn" id="tabHelpers" onclick="switchCategory('helpers')">🤝 సహాయకులు & కూలీలు</button>
+</div>
+
+<div class="services" id="servicesGrid"></div>
+
+<!-- ✨ CUSTOM ANY WORK BOOKING BOX -->
+<div class="custom-work-box">
+  <h3 style="margin:0 0 6px 0; color:#1d4ed8;">✨ ఇతర ఏ పని అయినా (Custom Work)</h3>
+  <p style="font-size:12px; color:#475569; margin:0 0 10px 0;">జాబితాలో లేని వేరే పనైతే ఇక్కడ టైప్ చేసి బుక్ చేసుకోండి (ఆడవారు / మగవారు)</p>
+  <input id="customWorkTitle" placeholder="పని పేరు (ఉదా: వంట సహాయం, ఇళ్ల శుభ్రత, టైలరింగ్, మొదలైనవి)">
+  <button class="primary" style="margin-top:6px;" onclick="bookCustomWork()">🚀 ఈ పని కోసం బుక్ చేయి</button>
+</div>
+</section>
+
+<section id="workers" class="hidden">
+<button class="back" onclick="page('home')">← Back</button>
+<div id="workerList"></div>
+</section>
+
+<section id="bookingPage" class="hidden">
+<button class="back" onclick="page('home')">← Back</button>
+<div class="card">
+<h2>📋 Service Booking</h2>
+<div id="selected" style="background:#eff6ff;color:#1d4ed8;padding:12px;border-radius:12px;font-weight:bold;margin-bottom:12px;"></div>
+
+<button class="secondary-gps" onclick="detectCurrentLocation()">📍 Detect Current Location (GPS)</button>
+<div id="mapContainer"></div>
+
+<input id="address" placeholder="🏠 పూర్తి అడ్రస్ లేదా ల్యాండ్‌మార్క్">
+<input id="date" type="date">
+<input id="time" type="time">
+<textarea id="details" placeholder="📝 పని వివరాలు"></textarea>
+
+<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:12px; margin:10px 0; font-size:13px;">
+  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+    <span>📏 దూరం:</span><b id="lblDistance">0.0 KM</b>
+  </div>
+  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+    <span>🛠️ కూలీ ఛార్జ్:</span><b id="lblWorkerBaseFare">₹350</b>
+  </div>
+  <div style="border-top:1px dashed #cbd5e1; margin:6px 0; padding-top:6px; display:flex; justify-content:space-between; color:#1d4ed8; font-weight:bold; font-size:15px;">
+    <span>💰 మొత్తం చెల్లించాల్సింది:</span><span id="lblTotalWorkerWage">₹350</span>
+  </div>
+</div>
+
+<button class="primary" onclick="saveBooking()">✅ Confirm Booking</button>
+</div>
+</section>
+
+<section id="bookings" class="hidden">
+<div class="card"><h2>📋 నా బుకింగ్స్</h2></div>
+<div id="bookingList"></div>
+</section>
+
+<section id="notifications" class="hidden">
+<div class="card"><h2>🔔 నోటిఫికేషన్లు</h2></div>
+<div id="custNotificationsList"></div>
+</section>
+
+<section id="ads" class="hidden">
+<div class="card"><h2>📢 లోకల్ ప్రకటనలు</h2></div>
+<div id="adsList"></div>
+</section>
+
+<section id="profile" class="hidden">
+<div class="card" style="text-align:center;">
+  <h2 id="profileName">Guest</h2>
+  <p id="profilePhone" style="color:#64748b;"></p>
+  <button class="primary" style="background:#dc2626; margin-top:15px;" onclick="logout()">🚪 Logout</button>
+</div>
+</section>
+
+</main>
+
+<nav id="nav" class="nav hidden">
+<button onclick="page('home',this)" class="active"><b>🏠</b><span>Home</span></button>
+<button onclick="page('bookings',this)"><b>📋</b><span>Bookings</span></button>
+<button onclick="page('ads',this)"><b>📢</b><span>Ads</span></button>
+<button onclick="page('profile',this)"><b>👤</b><span>Profile</span></button>
+</nav>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("pwaInstallBanner").classList.remove("hidden");
+});
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCM3qpjs92oS0L2kjRsHL7ilpUbMsd229E",
+  authDomain: "inti-mitra.firebaseapp.com",
+  projectId: "inti-mitra",
+  storageBucket: "inti-mitra.firebasestorage.app",
+  messagingSenderId: "254624886811",
+  appId: "1:254624886811:web:438bdddaaee3307545c8be"
+};
+
+let db = null;
+try {
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} catch (e){}
+
+const workerServices = [
+  {id:'plumber', title:'Plumber', icon:'🔧', sub:'Pipe & Leakage'},
+  {id:'electrician', title:'Electrician', icon:'⚡', sub:'Wiring & Repair'},
+  {id:'mason', title:'బిల్డింగ్ మేస్త్రీ', icon:'🧱', sub:'Civil Work'},
+  {id:'carpenter', title:'Carpenter', icon:'🪚', sub:'Wood & Furniture'},
+  {id:'painter', title:'Painter', icon:'🎨', sub:'Wall Painting'},
+  {id:'ac', title:'AC Technician', icon:'❄️', sub:'AC Repair'}
+];
+
+const helperServices = [
+  {id:'daily_helper', title:'సాధారణ హెల్పర్ / కూలీ', icon:'💪', sub:'Daily Labour'},
+  {id:'loading_helper', title:'లోడింగ్ & అన్‌లోడింగ్', icon:'📦', sub:'Heavy Goods'},
+  {id:'house_shifting', title:'ఇల్లు మార్పిడి హెల్పర్స్', icon:'🚛', sub:'Shifting'},
+  {id:'cooking_help', title:'వంట & గృహ సహాయం (ఆడవారు)', icon:'🍲', sub:'Cooking & House Help'},
+  {id:'tailoring_work', title:'టైలరింగ్ & కుట్టుపనులు', icon:'🧵', sub:'Tailoring'},
+  {id:'garden_helper', title:'గార్డెన్ పనులు', icon:'🌾', sub:'Garden Care'}
+];
+
+let currentCategory = "workers";
+let currentService = "";
+let currentWorkerData = null;
+let currentWorkerBaseWage = 350;
+let platformOfficialUpi = "intimitra@upi";
+let liveGeneratedOtp = null;
+let map = null, marker = null;
+let customerLat = 17.3850, customerLng = 78.4867;
+
+window.addEventListener('load', () => {
+  renderServices();
+  if(localStorage.getItem("user")) showApp();
+});
+
+function switchCategory(cat){
+  currentCategory = cat;
+  document.getElementById("tabWorkers").classList.toggle("active", cat === "workers");
+  document.getElementById("tabHelpers").classList.toggle("active", cat === "helpers");
+  renderServices();
+}
+
+function renderServices(){
+  const grid = document.getElementById("servicesGrid");
+  const list = currentCategory === "workers" ? workerServices : helperServices;
+  grid.innerHTML = list.map(s => `
+    <div class="service" onclick="loadWorkersList('${s.title}')">
+      <div class="icon">${s.icon}</div>
+      <b>${s.title}</b>
+      <div class="small">${s.sub}</div>
+    </div>
+  `).join("");
+}
+
+function sendOTP(){
+  const n = document.getElementById("name").value.trim();
+  const p = document.getElementById("phone").value.trim();
+  if(!n || !/^[0-9]{10}$/.test(p)){ toast("⚠️ సరైన పేరు మరియు 10 అంకెల నంబర్ ఇవ్వండి!"); return; }
+  localStorage.setItem("tempName", n);
+  localStorage.setItem("tempPhone", p);
+  liveGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  document.getElementById("loginInputFields").classList.add("hidden");
+  document.getElementById("otpSection").classList.remove("hidden");
+  alert(`📲 OTP: ${liveGeneratedOtp}`);
+}
+
+function resendOrChangeNumber(){
+  document.getElementById("otpSection").classList.add("hidden");
+  document.getElementById("loginInputFields").classList.remove("hidden");
+}
+
+function verifyOTP(){
+  if(document.getElementById("otp").value.trim() !== liveGeneratedOtp){ toast("❌ తప్పుడు OTP!"); return; }
+  localStorage.setItem("user", localStorage.getItem("tempName"));
+  localStorage.setItem("phone", localStorage.getItem("tempPhone"));
+  showApp();
+}
+
+function showApp(){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("nav").classList.remove("hidden");
+  document.getElementById("homeName").innerText = localStorage.getItem("user");
+  document.getElementById("headerUser").innerText = localStorage.getItem("user");
+  document.getElementById("profileName").innerText = localStorage.getItem("user");
+  document.getElementById("profilePhone").innerText = "+91 " + localStorage.getItem("phone");
+  listenToBookings();
+  page("home");
+}
+
+function page(id){
+  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+async function loadWorkersList(service){
+  currentService = service;
+  page('workers');
+  let workers = [];
+  if(db){
+    const snap = await db.collection("workers").where("service", "==", service).get();
+    snap.forEach(doc => workers.push(doc.data()));
+  }
+  if(!workers.length){
+    workers = [{ name: "ప్రసాద్ / లక్ష్మి", phone: "9876543210", service, wage: 350, lat: 17.3900, lng: 78.4900 }];
+  }
+  document.getElementById("workerList").innerHTML = workers.map(w => `
+    <div class="worker card">
+      <div><b>👷 ${w.name}</b></div>
+      <p style="color:#64748b; font-size:13px; margin:6px 0;">💰 కూలీ: ₹${w.wage}</p>
+      <button class="book" onclick="openBookModal(${JSON.stringify(w).replace(/"/g, '&quot;')})">📋 బుక్ చేయండి</button>
+    </div>
+  `).join("");
+}
+
+function bookCustomWork(){
+  const customName = document.getElementById("customWorkTitle").value.trim();
+  if(!customName){ toast("⚠️ పని పేరు రాయండి!"); return; }
+  currentService = "Custom: " + customName;
+  openBookModal({ name: "అందుబాటులో ఉన్న వర్కర్", phone: "9876543210", service: currentService, wage: 350, lat: customerLat, lng: customerLng });
+}
+
+function openBookModal(workerObj){
+  currentWorkerData = workerObj;
+  currentWorkerBaseWage = Number(workerObj.wage) || 350;
+  page('bookingPage');
+  document.getElementById("selected").innerHTML = `📁 ${currentService} • 👤 ${workerObj.name}`;
+  initMap();
+  document.getElementById("lblWorkerBaseFare").innerText = "₹" + currentWorkerBaseWage;
+  document.getElementById("lblTotalWorkerWage").innerText = "₹" + currentWorkerBaseWage;
+}
+
+function initMap(){
+  setTimeout(() => {
+    if(!map){
+      map = L.map('mapContainer').setView([customerLat, customerLng], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      marker = L.marker([customerLat, customerLng], {draggable: true}).addTo(map);
+    }
+  }, 300);
+}
+
+function detectCurrentLocation(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition((pos) => {
+    customerLat = pos.coords.latitude;
+    customerLng = pos.coords.longitude;
+    if(map && marker){
+      map.setView([customerLat, customerLng], 15);
+      marker.setLatLng([customerLat, customerLng]);
+    }
+  });
+}
+
+async function saveBooking(){
+  const address = document.getElementById("address").value.trim() || "Local";
+  const bookingId = "BK" + Date.now();
+  const completionOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  const newBooking = {
+    id: bookingId,
+    customerName: localStorage.getItem("user"),
+    customerPhone: localStorage.getItem("phone"),
+    customerLocation: { address, lat: customerLat, lng: customerLng },
+    service: currentService,
+    assignedWorker: currentWorkerData,
+    totalWorkerWage: currentWorkerBaseWage,
+    completionOtp: completionOtp,
+    status: "Confirmed",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  if(db) await db.collection("bookings").doc(bookingId).set(newBooking);
+  toast("✅ బుకింగ్ పూర్తయింది!");
+  page("bookings");
+}
+
+function listenToBookings(){
+  const phone = localStorage.getItem("phone");
+  if(!phone || !db) return;
+  db.collection("bookings").where("customerPhone", "==", phone).onSnapshot(snap => {
+    let list = [];
+    snap.forEach(doc => list.push(doc.data()));
+    document.getElementById("bookingList").innerHTML = list.map(b => `
+      <div class="card">
+        <h3>${b.service} - <span>${b.status}</span></h3>
+        <p style="font-size:13px;">🔑 OTP: <b style="color:#b45309; font-size:16px;">${b.completionOtp}</b></p>
+        <p style="font-size:13px;">💰 బిల్లు: ₹${b.totalWorkerWage}</p>
+      </div>
+    `).join("");
+  });
+}
+
+function triggerCustomerSOS(){
+  if(navigator.geolocation && db){
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      await db.collection("sos_alerts").add({
+        type: "Customer SOS", name: localStorage.getItem("user"),
+        phone: localStorage.getItem("phone"),
+        locationUrl: `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert("🚨 SOS అలర్ట్ పంపబడింది!");
+    });
+  }
+}
+
+function startVoiceAssistant(){
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRec) return;
+  const rec = new SpeechRec();
+  toast("🎤 మాట్లాడండి...");
+  rec.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    document.getElementById("customWorkTitle").value = text;
+    toast("🗣️ " + text);
+  };
+  rec.start();
+}
+
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.classList.remove("hidden");
+  setTimeout(() => t.classList.add("hidden"), 3000);
+}
+</script>
+</body>
+</html>

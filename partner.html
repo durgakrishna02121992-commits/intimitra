@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<title>INTI MITRA - Partner Portal</title>
+
+<!-- Worker PWA Manifest Link -->
+<link rel="manifest" href="manifest-worker.json">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Leaflet Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f172a;color:#f8fafc;font-family:Arial,sans-serif;padding-bottom:95px;user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+
+header{position:sticky;top:0;z-index:1000;background:#1e293b;color:#fff;padding:10px 14px;border-bottom:1px solid #334155}
+.top-bar{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:8px}
+.brand-logo-container{width:40px;height:40px;border-radius:10px;background:#0f172a;display:flex;align-items:center;justify-content:center;border:2px solid #f59e0b;overflow:hidden}
+.brand-logo-img{width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
+.logoText{font-size:16px;font-weight:900;color:#fff}
+
+.header-right{display:flex;align-items:center;gap:6px}
+select.indian-lang-select{background:#0f172a;color:#f59e0b;border:1px solid #f59e0b;padding:5px 6px;border-radius:8px;font-weight:bold;outline:none;font-size:11px}
+
+.bell-btn{position:relative;background:#334155;border:none;color:#fff;font-size:15px;padding:6px 8px;border-radius:8px;cursor:pointer}
+.bell-badge{position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:9px;font-weight:bold;padding:2px 5px;border-radius:10px}
+
+.worker-action-bar{display:flex;gap:8px;margin-top:8px}
+.sos-btn{background:#dc2626;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer}
+.w-voice-btn{flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:8px 12px;border-radius:8px;font-weight:bold;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+
+.install-bar{background:linear-gradient(135deg,#d97706,#b45309);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:bold;border-bottom:1px solid #f59e0b}
+.install-btn{background:#fff;color:#b45309;border:none;padding:6px 14px;border-radius:8px;font-weight:bold;cursor:pointer}
+
+main{max-width:750px;margin:auto;padding:14px}
+.card{background:#1e293b;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid #334155}
+
+input,select,textarea,button{font:inherit}
+input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #475569;border-radius:12px;outline:none;background:#0f172a;color:#fff}
+input:focus,select:focus{border-color:#f59e0b}
+
+button.primary{background:#f59e0b;color:#000;width:100%;padding:12px;border:none;border-radius:12px;font-weight:bold;margin-top:8px;cursor:pointer}
+button.complete-btn{background:#2563eb;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:bold;cursor:pointer;width:100%;margin-top:8px}
+
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-box{background:#334155;padding:10px 4px;border-radius:12px;text-align:center;border:1px solid #475569}
+.stat-box b{font-size:15px;color:#f59e0b;display:block}
+.stat-box span{font-size:11px;color:#94a3b8}
+
+.duty-box{background:linear-gradient(135deg,#1e293b,#0f172a);border:1.5px solid #f59e0b;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.switch{position:relative;display:inline-block;width:48px;height:26px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#475569;transition:.3s;border-radius:30px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:4px;bottom:4px;background-color:white;transition:.3s;border-radius:50%}
+input:checked+.slider{background-color:#22c55e}
+input:checked+.slider:before{transform:translateX(22px)}
+
+#workerRadarMap{width:100%;height:300px;border-radius:14px;border:2px solid #f59e0b;margin-top:10px}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-content{background:#1e293b;border:1px solid #475569;border-radius:18px;padding:20px;max-width:480px;color:#f8fafc;text-align:center}
+
+.nav{position:fixed;bottom:0;left:0;right:0;height:75px;background:#1e293b;display:grid;grid-template-columns:repeat(5,1fr);z-index:500;border-top:1px solid #334155}
+.nav button{background:transparent;color:#94a3b8;border:none;font-size:10px;font-weight:bold;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.nav button b{font-size:18px;margin-bottom:2px}
+.nav .active{color:#f59e0b}
+.toast{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:10px 18px;border-radius:12px;z-index:3000;border:1px solid #f59e0b}
+</style>
+</head>
+
+<body>
+
+<div id="pwaWorkerBanner" class="install-bar hidden">
+  <span>📲 INTI MITRA Partner యాప్‌ను ఇన్‌స్టాల్ చేసుకోండి</span>
+  <button class="install-btn" onclick="installWorkerPWA()">Install</button>
+</div>
+
+<header>
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-logo-container">
+        <span id="brandFallbackIcon">🏛️</span>
+        <img id="brandLogoImg" class="brand-logo-img hidden" alt="Logo">
+      </div>
+      <div><div class="logoText">INTI MITRA Partner</div></div>
+    </div>
+    <div class="header-right">
+      <button class="bell-btn" onclick="page('tabNotifications')">🔔<span class="bell-badge hidden" id="workerBellBadge">0</span></button>
+      <select class="indian-lang-select" id="langSelect" onchange="changeIndianLanguage(this.value)">
+        <option value="te">తెలుగు</option>
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+      </select>
+      <div id="headerDutyStatus" style="font-size:10px; background:#14532d; color:#86efac; padding:3px 6px; border-radius:6px; font-weight:bold;">🟢 Online</div>
+    </div>
+  </div>
+  <div class="worker-action-bar">
+    <button class="sos-btn" onclick="triggerWorkerSOS()">🚨 SOS</button>
+    <button class="w-voice-btn" onclick="startWorkerVoiceAssistant()">🎤 వాయిస్ కమాండ్</button>
+  </div>
+</header>
+
+<div id="otpModal" class="modal hidden">
+  <div class="modal-content">
+    <h3 style="margin-top:0; color:#f59e0b;">🔐 Completion OTP</h3>
+    <input type="text" id="enteredOtp" maxlength="6" inputmode="numeric" placeholder="Enter OTP" style="text-align:center; font-size:22px; letter-spacing:4px; font-weight:bold;">
+    <button class="primary" onclick="confirmJobCompletion()">✅ Verify & Complete</button>
+    <button class="primary" style="background:#ef4444; color:#fff; margin-top:8px;" onclick="closeOtpModal()">❌ Cancel</button>
+  </div>
+</div>
+
+<section id="workerLogin" style="max-width:440px; margin:20px auto; padding:16px;">
+<div class="card" style="text-align:center;">
+  <h2>వర్కర్ / హెల్పర్ లాగిన్</h2>
+  <div id="regFields">
+    <input id="wName" placeholder="మీ పూర్తి పేరు (Full Name)">
+    <input id="wPhone" maxlength="10" inputmode="numeric" placeholder="10 అంకెల మొబైల్ నంబర్">
+    
+    <select id="wService">
+      <option value="Plumber">Plumber (ప్లంబర్)</option>
+      <option value="Electrician">Electrician (ఎలక్ట్రీషియన్)</option>
+      <option value="బిల్డింగ్ మేస్త్రీ">బిల్డింగ్ మేస్త్రీ</option>
+      <option value="Carpenter">Carpenter (కార్పెంటర్)</option>
+      <option value="Painter">Painter (పెయింటర్)</option>
+      <option value="AC Technician">AC Technician</option>
+      <option value="సాధారణ హెల్పర్ / కూలీ">సాధారణ హెల్పర్ / కూలీ</option>
+      <option value="వంట & గృహ సహాయం (ఆడవారు)">వంట & గృహ సహాయం (ఆడవారు)</option>
+      <option value="టైలరింగ్ & కుట్టుపనులు">టైలరింగ్ & కుట్టుపనులు</option>
+      <option value="Custom Work">✨ ఇతర ఏదైనా ప్రత్యేక పని (Custom Work)</option>
+    </select>
+
+    <input id="customServiceName" class="hidden" placeholder="మీ సొంత పని పేరు టైప్ చేయండి (ఉదా: కేటరింగ్, హ్యాండ్‌క్రాఫ్ట్స్)">
+    <input id="wWage" type="number" placeholder="మీ పని కూలీ (e.g. ₹350)">
+    <input id="wUpiReg" placeholder="మీ UPI ID (e.g. 9876543210@upi)">
+
+    <button class="primary" onclick="sendWorkerLoginOTP()">📱 Get Secure OTP</button>
+  </div>
+
+  <div id="workerOtpSection" class="hidden" style="margin-top:12px;">
+    <input id="workerOtp" maxlength="6" inputmode="numeric" placeholder="Enter OTP" style="text-align:center; font-size:20px; font-weight:bold; letter-spacing:4px;">
+    <button class="primary" onclick="verifyWorkerLoginOTP()">✅ Verify & Enter</button>
+  </div>
+</div>
+</section>
+
+<main id="app" class="hidden">
+<section id="tabJobs">
+  <div class="duty-box">
+    <div>
+      <b>డ్యూటీ స్టేటస్</b>
+      <small id="txtDutySub" style="color:#22c55e;">ఆన్‌లైన్‌లో ఉన్నారు</small>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="chkDuty" checked onchange="toggleDutyStatus(this.checked)">
+      <span class="slider"></span>
+    </label>
+  </div>
+  <h3 style="color:#f59e0b; margin:0 0 10px 0;">📋 నా సర్వీస్ ఆర్డర్లు</h3>
+  <div id="jobsList"></div>
+</section>
+
+<section id="tabWallet" class="hidden">
+  <div class="stats-grid">
+    <div class="stat-box"><b id="statWallet">₹0</b><span>నికర ఆదాయం</span></div>
+    <div class="stat-box"><b id="statCommissionCut" style="color:#f87171;">₹0</b><span>కమీషన్</span></div>
+    <div class="stat-box"><b id="statJobs" style="color:#34d399;">0</b><span>పూర్తయినవి</span></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0; color:#f59e0b;">💰 లావాదేవీలు</h3>
+    <div id="walletHistoryList"></div>
+  </div>
+</section>
+
+<section id="tabRadar" class="hidden">
+  <div class="card">
+    <h3 style="margin:0 0 4px 0; color:#f59e0b;">🗺️ లోకల్ రాడార్ మ్యాప్</h3>
+    <button class="primary" style="padding:8px; margin:0 0 8px 0;" onclick="refreshWorkerLocation()">📍 లొకేషన్ అప్‌డేట్ చేయి</button>
+    <div id="workerRadarMap"></div>
+  </div>
+</section>
+
+<section id="tabAds" class="hidden">
+  <div class="card">
+    <h3 style="margin:0 0 6px 0; color:#f59e0b;">📢 ప్రకటన పోస్ట్ చేయండి</h3>
+    <input id="adTitle" placeholder="శీర్షిక (Title)">
+    <textarea id="adDesc" placeholder="పూర్తి వివరాలు"></textarea>
+    <button class="primary" onclick="postWorkerAd()">🚀 Post Ad</button>
+  </div>
+  <div id="workerAdsList"></div>
+</section>
+
+<section id="tabNotifications" class="hidden">
+  <div class="card"><h3 style="color:#f59e0b;">🔔 నోటిఫికేషన్లు</h3></div>
+  <div id="workerNotificationsList"></div>
+</section>
+
+<section id="tabProfile" class="hidden">
+<div class="card">
+  <h2 id="wProfName" style="margin:0;">Worker</h2>
+  <p id="wProfPhone" style="color:#94a3b8; margin:4px 0 12px 0;"></p>
+  <label>కూలీ రేటు (₹):</label>
+  <input id="wProfWage" type="number">
+  <label style="margin-top:8px; display:block;">UPI ID:</label>
+  <input id="wUpi">
+  <button class="primary" onclick="updateWorkerProfile()">💾 Save Settings</button>
+  <button class="primary" style="background:#dc2626; margin-top:12px;" onclick="workerLogout()">🚪 Logout</button>
+</div>
+</section>
+</main>
+
+<nav id="nav" class="nav hidden">
+  <button onclick="page('tabJobs',this)" class="active"><b>📋</b><span>పనులు</span></button>
+  <button onclick="page('tabWallet',this)"><b>💰</b><span>వాలెట్</span></button>
+  <button onclick="page('tabRadar',this)"><b>🗺️</b><span>రాడార్</span></button>
+  <button onclick="page('tabAds',this)"><b>📢</b><span>యాడ్స్</span></button>
+  <button onclick="page('tabProfile',this)"><b>👤</b><span>ప్రొఫైల్</span></button>
+</nav>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+let deferredWorkerPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredWorkerPrompt = e;
+  document.getElementById("pwaWorkerBanner").classList.remove("hidden");
+});
+function installWorkerPWA() {
+  if (deferredWorkerPrompt) {
+    deferredWorkerPrompt.prompt();
+    deferredWorkerPrompt.userChoice.then(() => { deferredWorkerPrompt = null; });
+  }
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCM3qpjs92oS0L2kjRsHL7ilpUbMsd229E",
+  authDomain: "inti-mitra.firebaseapp.com",
+  projectId: "inti-mitra",
+  storageBucket: "inti-mitra.firebasestorage.app",
+  messagingSenderId: "254624886811",
+  appId: "1:254624886811:web:438bdddaaee3307545c8be"
+};
+
+let db = null;
+try {
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} catch (e){}
+
+let currentWorker = {};
+let tempWorkerData = null;
+let commissionRatePercent = 10;
+let activeJobId = null, activeExpectedOtp = null, activeTotalWage = 0;
+let liveWorkerLoginOtp = null;
+let wMap = null, wMarker = null;
+
+window.addEventListener('load', () => {
+  const stored = localStorage.getItem("worker_session");
+  if(stored){
+    currentWorker = JSON.parse(stored);
+    showApp();
+  }
+  document.getElementById("wService").addEventListener("change", function(){
+    document.getElementById("customServiceName").classList.toggle("hidden", this.value !== "Custom Work");
+  });
+});
+
+function triggerWorkerSOS(){
+  if(navigator.geolocation && db){
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      await db.collection("sos_alerts").add({
+        type: "Worker SOS", workerName: currentWorker.name,
+        workerPhone: currentWorker.phone,
+        locationUrl: `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert("🚨 వర్కర్ SOS అలర్ట్ పంపబడింది!");
+    });
+  }
+}
+
+function sendWorkerLoginOTP(){
+  const name = document.getElementById("wName").value.trim();
+  const phone = document.getElementById("wPhone").value.trim();
+  let service = document.getElementById("wService").value;
+  if(service === "Custom Work"){
+    service = document.getElementById("customServiceName").value.trim() || "Custom Work";
+  }
+  const wage = Number(document.getElementById("wWage").value.trim()) || 350;
+  const upi = document.getElementById("wUpiReg").value.trim() || `${phone}@upi`;
+
+  if(!name || !/^[0-9]{10}$/.test(phone)){ toast("⚠️ సరైన వివరాలు ఇవ్వండి!"); return; }
+
+  tempWorkerData = { name, phone, service, wage, upi, isOnline: true, lat: 17.3900, lng: 78.4900 };
+  liveWorkerLoginOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  document.getElementById("regFields").classList.add("hidden");
+  document.getElementById("workerOtpSection").classList.remove("hidden");
+  alert(`📲 OTP: ${liveWorkerLoginOtp}`);
+}
+
+function verifyWorkerLoginOTP(){
+  if(document.getElementById("workerOtp").value.trim() !== liveWorkerLoginOtp){ toast("❌ తప్పుడు OTP!"); return; }
+  currentWorker = tempWorkerData;
+  localStorage.setItem("worker_session", JSON.stringify(currentWorker));
+  if(db) db.collection("workers").doc(currentWorker.phone).set(currentWorker, { merge: true });
+  showApp();
+}
+
+function showApp(){
+  document.getElementById("workerLogin").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("nav").classList.remove("hidden");
+  document.getElementById("wProfName").innerText = currentWorker.name;
+  document.getElementById("wProfPhone").innerText = "+91 " + currentWorker.phone + " | " + currentWorker.service;
+  document.getElementById("wProfWage").value = currentWorker.wage || 350;
+  document.getElementById("wUpi").value = currentWorker.upi || `${currentWorker.phone}@upi`;
+  listenToJobs();
+  listenToAds();
+  listenToNotifications();
+  page('tabJobs');
+}
+
+function page(id){
+  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  if(id === "tabRadar") initRadarMap();
+  window.scrollTo(0,0);
+}
+
+function toggleDutyStatus(isOnline){
+  currentWorker.isOnline = isOnline;
+  localStorage.setItem("worker_session", JSON.stringify(currentWorker));
+  if(db) db.collection("workers").doc(currentWorker.phone).update({ isOnline });
+}
+
+function listenToJobs(){
+  if(!db || !currentWorker.phone) return;
+  db.collection("bookings").where("service", "==", currentWorker.service).onSnapshot(snap => {
+    let completedCount = 0, netWallet = 0, totalComm = 0;
+    let list = [], completedList = [];
+    snap.forEach(doc => {
+      let d = doc.data();
+      list.push(d);
+      if(d.status === "Work Completed" && d.workerPhone === currentWorker.phone){
+        completedCount++;
+        let totalBill = d.totalWorkerWage || 350;
+        let comm = Math.round((totalBill * commissionRatePercent) / 100);
+        let workerNet = totalBill - comm;
+        netWallet += workerNet; totalComm += comm;
+        completedList.push({ ...d, comm, workerNet });
+      }
+    });
+    document.getElementById("statJobs").innerText = completedCount;
+    document.getElementById("statWallet").innerText = "₹" + netWallet;
+    document.getElementById("statCommissionCut").innerText = "₹" + totalComm;
+
+    document.getElementById("jobsList").innerHTML = list.map(j => `
+      <div class="card">
+        <h3 style="margin:0; color:#f59e0b;">${j.service} - ${j.status}</h3>
+        <p style="margin:6px 0;">👤 కస్టమర్: <b>${j.customerName}</b> (📞 <a href="tel:${j.customerPhone}" style="color:#f59e0b;">${j.customerPhone}</a>)</p>
+        <p style="font-size:12px; color:#94a3b8;">📍 అడ్రస్: ${j.customerLocation?.address || 'Local'}</p>
+        <div style="background:#0f172a; padding:8px; border-radius:10px; margin:6px 0; font-size:12px;">
+          <div>💳 బిల్లు: <b>₹${j.totalWorkerWage}</b></div>
+          <div style="color:#34d399; font-weight:bold; margin-top:2px;">💰 మీ నికర ఆదాయం: ₹${j.totalWorkerWage - Math.round((j.totalWorkerWage*10)/100)}</div>
+        </div>
+        ${j.status === 'Confirmed' ? `<button class="complete-btn" onclick="openOtpModal('${j.id}', '${j.completionOtp}', ${j.totalWorkerWage})">🏁 Complete Work (Enter OTP)</button>` : ''}
+      </div>
+    `).join("");
+
+    document.getElementById("walletHistoryList").innerHTML = completedList.length ? completedList.map(c => `
+      <div style="border-bottom:1px solid #334155; padding:8px 0; font-size:12px;">
+        <div style="display:flex; justify-content:space-between;"><b>${c.service} (${c.customerName})</b><b style="color:#34d399;">+₹${c.workerNet}</b></div>
+      </div>
+    `).join("") : `<p style="color:#94a3b8; font-size:12px;">లావాదేవీలు లేవు.</p>`;
+  });
+}
+
+function listenToNotifications(){
+  if(!db || !currentWorker.phone) return;
+  db.collection("bookings").where("service", "==", currentWorker.service).onSnapshot(snap => {
+    let list = [];
+    snap.forEach(doc => list.push(doc.data()));
+    document.getElementById("workerBellBadge").innerText = list.length;
+    if(list.length) document.getElementById("workerBellBadge").classList.remove("hidden");
+    document.getElementById("workerNotificationsList").innerHTML = list.map(item => `
+      <div class="card" style="border-left:4px solid #f59e0b;">
+        <b style="color:#f59e0b;">📢 సర్వీస్ అలర్ట్: ${item.service}</b>
+        <p style="font-size:12px; margin:4px 0;">👤 ${item.customerName} నుండి బుకింగ్ వచ్చింది.</p>
+      </div>
+    `).join("");
+  });
+}
+
+function initRadarMap(){
+  setTimeout(() => {
+    if(!wMap){
+      wMap = L.map('workerRadarMap').setView([currentWorker.lat || 17.385, currentWorker.lng || 78.486], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(wMap);
+      wMarker = L.marker([currentWorker.lat || 17.385, currentWorker.lng || 78.486]).addTo(wMap);
+    }
+  }, 250);
+}
+
+function refreshWorkerLocation(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition((pos) => {
+    currentWorker.lat = pos.coords.latitude;
+    currentWorker.lng = pos.coords.longitude;
+    wMap.setView([currentWorker.lat, currentWorker.lng], 15);
+    wMarker.setLatLng([currentWorker.lat, currentWorker.lng]);
+    db.collection("workers").doc(currentWorker.phone).update({ lat: currentWorker.lat, lng: currentWorker.lng });
+    toast("📍 GPS అప్‌డేట్ అయింది!");
+  });
+}
+
+function openOtpModal(jobId, otp, wage){
+  activeJobId = jobId; activeExpectedOtp = otp; activeTotalWage = wage;
+  document.getElementById("otpModal").classList.remove("hidden");
+}
+function closeOtpModal(){ document.getElementById("otpModal").classList.add("hidden"); }
+
+async function confirmJobCompletion(){
+  if(document.getElementById("enteredOtp").value.trim() !== activeExpectedOtp){ toast("❌ తప్పుడు OTP!"); return; }
+  let comm = Math.round((activeTotalWage * 10) / 100);
+  await db.collection("bookings").doc(activeJobId).update({
+    status: "Work Completed", workerPhone: currentWorker.phone,
+    workerName: currentWorker.name, workerNetPayout: activeTotalWage - comm,
+    completedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  closeOtpModal();
+  toast("🎉 పని పూర్తయింది!");
+}
+
+async function postWorkerAd(){
+  const title = document.getElementById("adTitle").value.trim();
+  const desc = document.getElementById("adDesc").value.trim();
+  if(!title || !desc){ toast("⚠️ వివరాలు రాయండి!"); return; }
+  await db.collection("ads").add({
+    title, desc, customerName: currentWorker.name + " (Worker)",
+    phone: currentWorker.phone, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  document.getElementById("adTitle").value = ""; document.getElementById("adDesc").value = "";
+  toast("✅ ప్రకటన పోస్ట్ చేయబడింది!");
+}
+
+function listenToAds(){
+  if(!db) return;
+  db.collection("ads").orderBy("createdAt", "desc").onSnapshot(snap => {
+    let list = [];
+    snap.forEach(doc => list.push(doc.data()));
+    document.getElementById("workerAdsList").innerHTML = list.map(a => `
+      <div class="card"><h4 style="color:#f59e0b; margin:0;">${a.title}</h4><p style="font-size:12px;">${a.desc}</p></div>
+    `).join("");
+  });
+}
+
+function updateWorkerProfile(){
+  let wage = Number(document.getElementById("wProfWage").value) || 350;
+  let upi = document.getElementById("wUpi").value;
+  currentWorker.wage = wage; currentWorker.upi = upi;
+  localStorage.setItem("worker_session", JSON.stringify(currentWorker));
+  db.collection("workers").doc(currentWorker.phone).update({ wage, upi });
+  toast("✅ ప్రొఫైల్ అప్‌డేట్ అయింది!");
+}
+
+function workerLogout(){
+  localStorage.clear();
+  location.reload();
+}
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.classList.remove("hidden");
+  setTimeout(() => t.classList.add("hidden"), 3000);
+}
+</script>
+</body>
+</html>
