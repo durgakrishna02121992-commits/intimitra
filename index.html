@@ -4,496 +4,855 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#1264e8">
-<title>INTI MITRA - Customer App</title>
-
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
+<title>ఇంటి మిత్ర - కస్టమర్ పోర్టల్</title>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<!-- Leaflet Map -->
+<!-- Leaflet Map SDK -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f4f7fc;color:#1e293b;font-family:Arial,sans-serif;padding-bottom:90px;user-select:none;-webkit-user-select:none}
+body{margin:0;background:#f3f7ff;color:#172033;font-family:Arial,"Noto Sans Telugu",sans-serif;padding-bottom:120px}
 .hidden{display:none!important}
 
-header{position:sticky;top:0;z-index:1000;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+header{position:sticky;top:0;z-index:1000;background:linear-gradient(135deg,#1264e8,#063a9b);color:#fff;padding:14px 16px;box-shadow:0 3px 15px #0003}
 .top{display:flex;align-items:center;justify-content:space-between}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-logo-container{width:44px;height:44px;border-radius:12px;background:#0f172a;display:flex;align-items:center;justify-content:center;border:2px solid #60a5fa;overflow:hidden}
+.brand{display:flex;align-items:center;gap:10px}
+
+.brand-logo-container{width:46px;height:46px;border-radius:12px;background:#1264e8;display:flex;align-items:center;justify-content:center;border:2px solid #60a5fa;overflow:hidden;flex-shrink:0}
 .brand-logo-img{width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
-.logoText{font-size:20px;font-weight:900;color:#fff}
+.logoText{font-size:19px;font-weight:900}
 
-.header-actions{display:flex;align-items:center;gap:8px}
-select.lang-select{background:#334155;color:#fff;border:1px solid #60a5fa;padding:6px 8px;border-radius:8px;font-weight:bold;outline:none;font-size:12px}
+.header-actions{display:flex;align-items:center;gap:10px}
+select.lang-select{background:#334155;color:#fff;border:1px solid #60a5fa;padding:6px 8px;border-radius:8px;font-weight:bold;outline:none;font-size:14px;cursor:pointer}
 
-.bell-btn{position:relative;background:#334155;border:none;color:#fff;font-size:16px;padding:6px 10px;border-radius:10px;cursor:pointer}
-.bell-badge{position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:10px}
+.bell-btn{position:relative;background:#334155;border:none;color:#fff;font-size:18px;padding:8px 12px;border-radius:10px;cursor:pointer}
+.bell-badge{position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:11px;font-weight:bold;padding:2px 6px;border-radius:10px}
 
-.install-bar{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:bold;border-bottom:1px solid #38bdf8}
-.install-btn{background:#fff;color:#0369a1;border:none;padding:6px 14px;border-radius:8px;font-weight:bold;cursor:pointer}
+.sos-voice-bar{display:flex;gap:8px;margin-top:12px}
+.sos-btn{background:#dc2626;color:#fff;border:0;padding:10px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer;flex:1}
+.read-btn{flex:1;background:#16a34a;color:#fff;border:0;padding:10px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer}
+.stop-btn{flex:1;background:#475569;color:#fff;border:0;padding:10px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer}
 
-.sos-voice-bar{display:flex;gap:10px;margin-top:10px}
-.sos-btn{background:#dc2626;color:#fff;border:none;padding:8px 14px;border-radius:10px;font-weight:bold;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer}
-.voice-btn{flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:8px 12px;border-radius:10px;font-weight:bold;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+main{max-width:700px;margin:auto;padding:17px}
+.card,.service,.worker,.booking,.ad,.profile,.info{background:#fff;border-radius:18px;box-shadow:0 4px 16px #00000012;padding:20px;margin-bottom:14px}
+.login{text-align:center;padding:20px;max-width:500px;margin:auto}
 
-main{max-width:750px;margin:auto;padding:16px}
-.card{background:#fff;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,0.06);padding:20px;margin-bottom:16px}
-.login{text-align:center;padding:24px;max-width:420px;margin:20px auto}
-.loginLogoBox{width:90px;height:90px;background:#0f172a;margin:0 auto 15px;border-radius:22px;display:flex;align-items:center;justify-content:center;border:3px solid #60a5fa;overflow:hidden}
-.login-brand-img{width:100%;height:100%;object-fit:contain;background:#fff;padding:4px}
+input,textarea,select,button{font:inherit}
+input,textarea,select{width:100%;padding:14px;margin:8px 0;border:1px solid #d5dce8;border-radius:14px;outline:none}
+textarea{min-height:90px;resize:none}
+button{border:0;border-radius:14px;padding:14px;font-weight:bold;cursor:pointer}
+.primary{background:#1769e8;color:#fff;width:100%;margin-top:8px}
+.orange{background:#ff9800;color:#fff;width:100%;margin-top:8px}
+.danger{background:#e53935;color:#fff;width:100%;margin-top:8px}
+.back{background:#e9eef8;color:#263247;margin-bottom:12px;width:100%}
 
-input,textarea,button{font:inherit}
-input,textarea{width:100%;padding:14px;margin:8px 0;border:1px solid #cbd5e1;border-radius:14px;outline:none;background:#f8fafc}
-input:focus,textarea:focus{border-color:#2563eb;background:#fff}
-textarea{min-height:80px;resize:none}
+.welcome-banner {
+    background: linear-gradient(135deg, #1264e8, #4388f1);
+    color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(18, 100, 232, 0.2);
+}
+.tagline-text { font-size: 17px; font-weight: bold; margin-bottom: 10px; letter-spacing: 0.5px; line-height: 1.4; }
+.daily-slogan-box { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); padding: 10px 14px; border-radius: 12px; font-size: 14px; font-style: italic; color: #fef08a; }
 
-button.primary{background:#2563eb;color:#fff;width:100%;padding:14px;border:none;border-radius:14px;font-weight:bold;margin-top:8px;cursor:pointer}
-button.secondary-gps{background:#0284c7;color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:bold;cursor:pointer;width:100%;margin-bottom:8px}
-button.back{background:#e2e8f0;color:#334155;border:none;padding:10px 16px;border-radius:12px;font-weight:bold;margin-bottom:14px;cursor:pointer}
+.festival-banner {
+    background: linear-gradient(135deg, #b45309, #d97706);
+    color: #fff; border-radius: 18px; padding: 16px; margin-bottom: 15px; text-align: center;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3); border: 1px solid #fde047;
+}
 
-#mapContainer{width:100%;height:220px;border-radius:14px;margin:10px 0;border:2px solid #cbd5e1;z-index:10}
-
-.folder-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.folder-btn{padding:12px;border:2px solid #e2e8f0;background:#fff;border-radius:14px;font-weight:bold;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:#475569}
-.folder-btn.active{border-color:#2563eb;background:#eff6ff;color:#2563eb}
-
-.welcome{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border-radius:22px;padding:22px;margin-bottom:16px}
 .services{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.service{background:#fff;border:1px solid #e2e8f0;border-radius:18px;text-align:center;padding:20px 10px;cursor:pointer}
-.service .icon{font-size:38px;margin-bottom:8px}
+.service{text-align:center;padding:20px 10px;margin:0;cursor:pointer;border:2px solid #e2e8f0;border-radius:16px;background:#fff;transition:.2s}
+.service:hover{border-color:#1769e8;background:#eff6ff}
+.icon{font-size:40px;margin-bottom:8px}
+.small{font-size:13px;color:#687386}
 
-.custom-work-box{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px dashed #2563eb;border-radius:18px;padding:16px;text-align:center;margin-top:16px}
+.nav{
+position:fixed;bottom:12px;left:16px;right:16px;height:72px;
+background:rgba(15, 23, 42, 0.95);backdrop-filter:blur(10px);
+display:grid;grid-template-columns:repeat(4,1fr);
+box-shadow:0 10px 30px rgba(0,0,0,0.25);z-index:999;
+border-radius:22px;border:1px solid rgba(255,255,255,0.15);overflow:hidden;
+}
+.nav button{
+background:transparent;color:#94a3b8;border-radius:0;font-size:11px;font-weight:bold;cursor:pointer;transition:.3s;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;
+}
+.nav button b{font-size:20px;margin-bottom:2px}
+.nav .active{color:#60a5fa;background:rgba(37,99,235,0.2)}
 
-.worker{background:#fff;border-radius:18px;padding:16px;margin-bottom:12px;border:1px solid #e2e8f0}
-.book{width:100%;background:#2563eb;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:bold;margin-top:10px;cursor:pointer}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#202938;color:#fff;padding:14px 22px;border-radius:14px;z-index:3000;max-width:90%;text-align:center;font-weight:bold;font-size:16px}
+.otpBox{background:#edf4ff;border:1px solid #d5e4ff;border-radius:15px;padding:16px;margin-top:12px}
 
-.qr-payment-card{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px dashed #2563eb;border-radius:18px;padding:18px;text-align:center;margin:12px 0}
-.qr-img{width:180px;height:180px;margin:10px auto;border-radius:12px;background:#fff;padding:8px}
-.upi-copy-box{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1.5px solid #60a5fa;border-radius:12px;padding:8px 12px;margin:10px 0;font-size:13px}
-
-.nav{position:fixed;bottom:0;left:0;right:0;height:80px;background:#fff;display:grid;grid-template-columns:repeat(4,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.08);z-index:500}
-.nav button{background:transparent;color:#64748b;border:none;font-size:12px;font-weight:600;cursor:pointer}
-.nav button b{display:block;font-size:24px;margin-bottom:2px}
-.nav .active{color:#2563eb}
-
-.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:14px;z-index:3000}
+#notificationsModal, #mapModal, #workerPaymentModal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+.notif-box{background:#fff;width:100%;max-width:380px;border-radius:18px;padding:20px;max-height:75vh;overflow-y:auto;text-align:left}
 </style>
 </head>
 
-<body>
-
-<div id="pwaInstallBanner" class="install-bar hidden">
-  <span>📲 INTI MITRA యాప్‌ను ఇన్‌స్టాల్ చేసుకోండి</span>
-  <button class="install-btn" onclick="installPWA()">Install App</button>
-</div>
+<body onunload="stopAllSpeech()" onbeforeunload="stopAllSpeech()">
 
 <header>
 <div class="top">
   <div class="brand">
     <div class="brand-logo-container">
-      <span id="brandFallbackIcon" style="font-size:24px;">🏛️</span>
-      <img id="brandLogoImg" class="brand-logo-img hidden" alt="Logo">
+      <span id="hdrFallbackIcon" style="font-size:22px;">🏠</span>
+      <img id="hdrLogoImg" class="brand-logo-img hidden" alt="Logo">
     </div>
-    <div class="logoText">INTI MITRA</div>
+    <div class="logoText" id="headerTitleText">ఇంటి మిత్ర</div>
   </div>
   <div class="header-actions">
-    <button class="bell-btn" onclick="page('notifications')">🔔<span class="bell-badge hidden" id="custBellBadge">0</span></button>
-    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+    <button class="bell-btn" onclick="openNotificationsModal()">🔔<span class="bell-badge" id="notifBadge">0</span></button>
+    <select class="lang-select" id="langSelect" onchange="changeAppLanguage(this.value)">
       <option value="te">తెలుగు</option>
-      <option value="en">English</option>
       <option value="hi">हिंदी</option>
+      <option value="en">English</option>
     </select>
-    <div id="headerUser" style="font-size:13px; font-weight:bold;">Guest</div>
   </div>
 </div>
-
 <div class="sos-voice-bar">
-  <button class="sos-btn" onclick="triggerCustomerSOS()">🚨 SOS</button>
-  <button class="voice-btn" onclick="startVoiceAssistant()">🎤 మాట్లాడి వెతకండి</button>
+  <button class="sos-btn" onclick="triggerSOS()">🚨 SOS</button>
+  <button class="read-btn" onclick="readCurrentScreenText()">🔊 చదువు</button>
+  <button class="stop-btn" onclick="stopAllSpeech()">⏹️ ఆపు</button>
 </div>
 </header>
 
+<!-- LOGIN & REGISTRATION -->
 <section id="login" class="login">
 <div class="card">
-<div class="loginLogoBox">
-  <span id="loginFallbackIcon" style="font-size:46px;">🏛️</span>
-  <img id="loginBrandImg" class="login-brand-img hidden" alt="Login Brand Logo">
-</div>
-<h2>INTI MITRA</h2>
-<p style="font-size:13px; color:#64748b; margin-top:-6px;">కస్టమర్ సురక్షిత లాగిన్</p>
+<div style="font-size:50px; margin-bottom:10px;">🏠</div>
+<h2>కస్టమర్ లాగిన్ / రిజిస్ట్రేషన్</h2>
 
-<div id="loginInputFields">
-  <input id="name" placeholder="మీ పూర్తి పేరు (Full Name)">
+<div id="phoneCheckSection">
   <input id="phone" maxlength="10" inputmode="numeric" placeholder="10 అంకెల మొబైల్ నంబర్">
-  <button class="primary" onclick="sendOTP()">📱 Get Secure OTP</button>
+  <button class="primary" onclick="checkUserRegistration()">📱 నంబర్ ఎంటర్ చేయండి</button>
 </div>
 
-<div id="otpSection" class="hidden" style="margin-top:15px;">
-  <p style="font-size:13px; color:#1e293b; margin:0 0 6px 0;">6-అంకెల కోడ్ నమోదు చేయండి:</p>
-  <input id="otp" maxlength="6" inputmode="numeric" placeholder="Enter OTP" style="text-align:center; font-size:20px; font-weight:bold; letter-spacing:4px;">
-  <button class="primary" onclick="verifyOTP()">✅ Verify & Enter</button>
-  <button class="primary" style="background:#64748b; margin-top:8px;" onclick="resendOrChangeNumber()">← మార్చండి</button>
+<div id="registerSection" class="otpBox hidden" style="text-align:left;">
+  <h3 style="color:#2563eb; margin-top:0;">📝 రిజిస్ట్రేషన్ (ఫీజు: <span id="dynamicRegFeeText">₹10</span>)</h3>
+  <label style="font-size:14px; font-weight:bold;">పూర్తి పేరు *</label>
+  <input id="regName" placeholder="మీ పూర్తి పేరు">
+  <button class="primary" onclick="payRegistrationFee()" style="background:#16a34a;">💳 ఫీజు పే చేసి రిజిస్టర్ అవ్వండి</button>
+</div>
+
+<div id="otpBoxSection" class="otpBox hidden">
+  <h3>🔐 OTP లాగిన్ (Demo: 123456)</h3>
+  <input id="otp" maxlength="6" inputmode="numeric" placeholder="OTP ఎంటర్ చేయండి">
+  <button class="primary" onclick="verifyOTP()">✅ వెరిఫై & లాగిన్</button>
 </div>
 </div>
 </section>
 
+<!-- APP -->
 <main id="app" class="hidden">
 
+<!-- HOME -->
 <section id="home">
-<div class="welcome">
-<h2 style="margin:0 0 6px 0;">నమస్కారం <span id="homeName">Customer</span> 👋</h2>
-<p style="margin:0; font-size:14px;">మగవారు & ఆడవారు చేయగల సేవలు లేదా ఇతర ఏ పని అయినా ఎంచుకోండి</p>
+  <!-- ✨ Admin Festival / Event Greeting Banner (Dynamic) -->
+  <div id="festivalBannerBox" class="festival-banner hidden">
+    <h3 id="festivalBannerTitle" style="margin:0 0 6px 0; font-size:18px;">🎉 పండుగ శుభాకాంక్షలు!</h3>
+    <p id="festivalBannerText" style="margin:0; font-size:14px; line-height:1.4;"></p>
+  </div>
+
+<div class="welcome-banner">
+  <div class="tagline-text">🤝 రండి మనమందరం కలిసి మన ఇంటిమిత్రతో కలిసి ముందుకు వెళ్దాం!</div>
+  <div class="daily-slogan-box" id="dailySloganText">💡 "శ్రమే నిజమైన సంపద, సేవయే నిజమైన దైవం."</div>
 </div>
 
-<div class="folder-tabs">
-  <button class="folder-btn active" id="tabWorkers" onclick="switchCategory('workers')">🛠️ నిపుణులు & టెక్నీషియన్స్</button>
-  <button class="folder-btn" id="tabHelpers" onclick="switchCategory('helpers')">🤝 సహాయకులు & కూలీలు</button>
+<div class="card" style="background:#fff; color:#172033; border:1px solid #cbd5e1; padding:15px; margin-bottom:15px;">
+<h2>నమస్కారం <span id="homeName">గృహస్థు</span> 👋</h2>
+<p style="margin:4px 0;">శాశ్వత ID: <b id="dashCustId" style="color:#2563eb;">-</b></p>
 </div>
 
-<div class="services" id="servicesGrid"></div>
+<!-- కస్టమ్ సర్వీస్ సెర్చ్ & జెండర్ సెలెక్షన్ బాక్స్ -->
+<div class="card" style="background:#eff6ff; border:1px solid #bfdbfe; margin-bottom:15px; text-align:left;">
+    <h3 style="margin:0 0 8px 0; color:#1e3a8a; font-size:16px;">🔍 కావలసిన పనిని టైప్ చేయండి (Custom Service)</h3>
+    <p style="margin:0 0 10px 0; font-size:13px; color:#475569;">యాప్‌లో లేని పనైనా సరే ఇక్కడ టైప్ చేసి వర్కర్లను వెకకండి:</p>
+    
+    <input id="customSearchInput" placeholder="ఉదా: పెయింటింగ్, వంట మనిషి, కార్పెంటర్ మొదలైనవి..." style="background:#fff; margin-bottom:8px;">
+    
+    <label style="font-weight:bold; font-size:13px; color:#1e293b; display:block; margin-top:6px;">వర్కర్ లింగం ఎంచుకోండి (Preferred Worker Gender):</label>
+    <select id="preferredGenderSelect" style="background:#fff; margin-bottom:10px;">
+        <option value="Any">ఎవరైనా పర్వాలేదు (Any)</option>
+        <option value="Male">మగవారు (Male Worker)</option>
+        <option value="Female">ఆడవాళ్లు (Female Worker)</option>
+    </select>
 
-<!-- ✨ CUSTOM ANY WORK BOOKING BOX -->
-<div class="custom-work-box">
-  <h3 style="margin:0 0 6px 0; color:#1d4ed8;">✨ ఇతర ఏ పని అయినా (Custom Work)</h3>
-  <p style="font-size:12px; color:#475569; margin:0 0 10px 0;">జాబితాలో లేని వేరే పనైతే ఇక్కడ టైప్ చేసి బుక్ చేసుకోండి (ఆడవారు / మగవారు)</p>
-  <input id="customWorkTitle" placeholder="పని పేరు (ఉదా: వంట సహాయం, ఇళ్ల శుభ్రత, టైలరింగ్, మొదలైనవి)">
-  <button class="primary" style="margin-top:6px;" onclick="bookCustomWork()">🚀 ఈ పని కోసం బుక్ చేయి</button>
+    <button class="primary" onclick="searchCustomWorkersAndBook()" style="background:#2563eb; margin:0;">🔍 వర్కర్ల కోసం వెతకండి</button>
+</div>
+
+<!-- కస్టమర్ సెర్చ్ చేసిన తర్వాత వర్కర్ల జాబితా చూపించే కంటైనర్ -->
+<div id="customWorkersResultContainer" class="hidden" style="margin-bottom:15px;"></div>
+
+<h2 style="margin-top:15px;">🛠️ ప్రధాన సేవలు</h2>
+<div class="services">
+  <button class="service" onclick="workersPage('Plumber & Electrician', 1200)"><div class="icon">🚰⚡</div><b>ప్లంబింగ్ & కరెంట్</b><div class="small">₹1200 / రోజు</div></button>
+  <button class="service" onclick="workersPage('AC & Appliances', 1500)"><div class="icon">❄️</div><b>ఏసీ & ఫ్రిజ్ రిపేర్</b><div class="small">₹1500 / రోజు</div></button>
+  <button class="service" onclick="workersPage('Ladies Beauty & Salon', 1000)"><div class="icon">💄</div><b>బ్యూటీ & సెలూన్</b><div class="small">₹1000 / రోజు</div></button>
+  <button class="service" onclick="workersPage('Home Deep Cleaning', 2000)"><div class="icon">🧹</div><b>డీప్ క్లీనింగ్</b><div class="small">₹2000 / రోజు</div></button>
 </div>
 </section>
 
+<!-- WORKERS -->
 <section id="workers" class="hidden">
-<button class="back" onclick="page('home')">← Back</button>
+<button class="back" onclick="page('home')">← వెనుకకు</button>
+<div class="card"><h2 id="workerTitle">Workers</h2></div>
 <div id="workerList"></div>
 </section>
 
+<!-- BOOKING -->
 <section id="bookingPage" class="hidden">
-<button class="back" onclick="page('home')">← Back</button>
+<button class="back" onclick="page('home')">← వెనుకకు</button>
 <div class="card">
-<h2>📋 Service Booking</h2>
-<div id="selected" style="background:#eff6ff;color:#1d4ed8;padding:12px;border-radius:12px;font-weight:bold;margin-bottom:12px;"></div>
-
-<button class="secondary-gps" onclick="detectCurrentLocation()">📍 Detect Current Location (GPS)</button>
-<div id="mapContainer"></div>
-
-<input id="address" placeholder="🏠 పూర్తి అడ్రస్ లేదా ల్యాండ్‌మార్క్">
+<h2>📋 సర్వీస్ బుకింగ్ & అడ్వాన్స్ పేమెంట్</h2>
+<p>ఎంచుకున్న పని: <b id="bookingServiceName" style="color:#2563eb;">-</b></p>
+<input id="address" placeholder="🏠 మీ అడ్రస్ టైప్ చేయండి">
 <input id="date" type="date">
-<input id="time" type="time">
-<textarea id="details" placeholder="📝 పని వివరాలు"></textarea>
 
-<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:12px; margin:10px 0; font-size:13px;">
-  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-    <span>📏 దూరం:</span><b id="lblDistance">0.0 KM</b>
-  </div>
-  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-    <span>🛠️ కూలీ ఛార్జ్:</span><b id="lblWorkerBaseFare">₹350</b>
-  </div>
-  <div style="border-top:1px dashed #cbd5e1; margin:6px 0; padding-top:6px; display:flex; justify-content:space-between; color:#1d4ed8; font-weight:bold; font-size:15px;">
-    <span>💰 మొత్తం చెల్లించాల్సింది:</span><span id="lblTotalWorkerWage">₹350</span>
-  </div>
+<label style="font-weight:bold; font-size:14px; margin-top:8px; display:block;">పని జరిగే రోజుల సంఖ్య (Number of Days):</label>
+<select id="numberOfDays" onchange="calculateTotalPayment()" style="background:#f8fafc; font-weight:bold; color:#1e293b;">
+  <option value="1">1 రోజు (1 Day)</option>
+  <option value="2">2 రోజులు (2 Days)</option>
+  <option value="3">3 రోజులు (3 Days)</option>
+  <option value="4">4 రోజులు (4 Days)</option>
+  <option value="5">5 రోజులు (5 Days)</option>
+</select>
+
+<div style="background:#fef3c7; border:1px solid #f59e0b; padding:14px; border-radius:12px; margin:12px 0; text-align:center;">
+  <p style="margin:0; font-size:13px; color:#92400e;">వర్కర్‌కి చెల్లించవలసిన పూర్తి అంచనా అమౌంట్: <b id="estimatedTotalDisplay">₹1200</b></p>
+  <p style="margin:5px 0 0 0; font-size:14px; color:#b45309; font-weight:bold;">ఇప్పుడు అడ్మిన్‌కి చెల్లించవలసిన అడ్వాన్స్: <span id="adminAdvanceDisplay" style="font-size:18px; color:#dc2626;">₹50</span></p>
 </div>
 
-<button class="primary" onclick="saveBooking()">✅ Confirm Booking</button>
+<button class="orange" onclick="payAdminAdvanceAndBook()" style="background:#f59e0b; color:#000;">💳 అడ్మిన్ అడ్వాన్స్ పే చేసి బుక్ చేయి</button>
 </div>
 </section>
 
+<!-- BOOKINGS -->
 <section id="bookings" class="hidden">
-<div class="card"><h2>📋 నా బుకింగ్స్</h2></div>
-<div id="bookingList"></div>
+<div class="card">
+  <h2>📋 నా బుకింగ్స్ & వర్కర్ పేమెంట్</h2>
+  <div id="bookingList">
+    <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:14px; margin-bottom:12px; text-align:left;">
+      <h4 style="margin:0 0 4px 0; color:#1e293b;">🛠️ ప్లంబింగ్ సర్వీస్ (2 రోజులు - టోటల్: ₹2400)</h4>
+      <p style="margin:0 0 4px 0; font-size:13px; color:#64748b;">స్టేటస్: <b style="color:#16a34a;">పని జరుగుతోంది</b></p>
+      
+      <button class="primary" onclick="openLiveMapModal()" style="background:#0284c7; padding:10px; font-size:13px; margin-bottom:6px;">🗺️ లైవ్ రూట్ మ్యాప్ చూడండి</button>
+      <button class="primary" onclick="openWorkerPaymentModal()" style="background:#16a34a; padding:10px; font-size:13px;">✅ పని పూర్తి - OTP చెప్పి ఫుల్ పేమెంట్ చెల్లించు</button>
+    </div>
+  </div>
+</div>
 </section>
 
-<section id="notifications" class="hidden">
-<div class="card"><h2>🔔 నోటిఫికేషన్లు</h2></div>
-<div id="custNotificationsList"></div>
-</section>
-
+<!-- ADS -->
 <section id="ads" class="hidden">
-<div class="card"><h2>📢 లోకల్ ప్రకటనలు</h2></div>
-<div id="adsList"></div>
+<div class="card">
+<h2>📢 లోకల్ ప్రకటనలు & మార్కెట్ (Public Feed)</h2>
+<div style="background:#e0f2fe; padding:12px; border-radius:10px; font-size:13px; color:#0369a1; margin-bottom:12px;">
+  ℹ️ మొదటి 3 రోజులు ప్రకటన ఉచితం! గడువు ముగిసిన తర్వాత కొనసాగించడానికి చిన్న మంత్లీ ఫీజు వర్తిస్తుంది.
+</div>
+<input id="adTitle" placeholder="మీ ప్రకటన శీర్షిక (Title)">
+<textarea id="adDesc" placeholder="ప్రకటన వివరాలు రాయండి..."></textarea>
+<input id="adPhone" maxlength="10" inputmode="numeric" placeholder="కాంటాక్ట్ ఫోన్ నంబర్">
+<input type="file" id="adMediaFile" accept="image/*,video/*" style="background:#fff; padding:10px;">
+<button class="primary" onclick="postAdWithMedia()">📢 మీ ప్రకటన పోస్ట్ చేయండి (3 Days Free)</button>
+</div>
+
+<h3 style="margin-top:20px; color:#1e293b;">📋 ఇతరులు పోస్ట్ చేసిన లోకల్ యాడ్స్ (Live Feed):</h3>
+<div id="allAdsFeedContainer">
+  <p style="color:#64748b; text-align:center;">ప్రకటనలు లోడ్ అవుతున్నాయి...</p>
+</div>
 </section>
 
-<section id="profile" class="hidden">
-<div class="card" style="text-align:center;">
-  <h2 id="profileName">Guest</h2>
-  <p id="profilePhone" style="color:#64748b;"></p>
-  <button class="primary" style="background:#dc2626; margin-top:15px;" onclick="logout()">🚪 Logout</button>
+<!-- PROFILE -->
+<section id="pageProfile" class="hidden">
+<button class="back" onclick="page('home')">← వెనుకకు</button>
+<div class="card" style="text-align:left;">
+    <h2 style="text-align:center; color:#0f172a;">👤 కస్టమర్ ప్రొఫైల్ ఎడిటింగ్</h2>
+    
+    <div style="text-align:center; margin-bottom:15px;">
+        <img id="custProfileImg" src="" alt="Profile" style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid #1264e8; display:none; margin:auto;">
+        <span id="custProfileFallback" style="font-size:60px;">👤</span>
+        <div style="margin-top:8px;">
+            <label style="background:#2563eb; color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; cursor:pointer; display:inline-block;">
+                📷 ఫోటో మార్చుకోండి
+                <input type="file" id="custPhotoUploadFile" accept="image/*" style="display:none;" onchange="uploadCustomerPhoto(this)">
+            </label>
+        </div>
+    </div>
+
+    <div style="background:#f8fafc; padding:18px; border-radius:16px; border:1px solid #cbd5e1; line-height:1.8;">
+        <p><b>శాశ్వత ID:</b> <span id="profCustId" style="color:#2563eb; font-weight:bold;">-</span></p>
+        
+        <label style="font-weight:bold; font-size:13px; color:#475569;">పూర్తి పేరు:</label>
+        <input id="editCustName" placeholder="మీ పేరు">
+
+        <label style="font-weight:bold; font-size:13px; color:#475569;">ఫోన్ నంబర్:</label>
+        <input id="editCustPhone" readonly style="background:#e2e8f0; color:#64748b;" placeholder="ఫోన్ నంబర్">
+
+        <label style="font-weight:bold; font-size:13px; color:#475569;">UPI ID / బ్యాంక్ రీఫండ్ వివరాలు:</label>
+        <input id="editCustUpi" placeholder="ఉదా: username@okaxis">
+
+        <button class="primary" onclick="saveEditedProfile()" style="background:#16a34a; margin-top:12px;">💾 ప్రొఫైల్ వివరాలు సేవ్ చేయి</button>
+    </div>
+    
+    <button class="danger" onclick="logout()" style="margin-top:15px;">🚪 లాగౌట్</button>
 </div>
 </section>
 
 </main>
 
+<!-- WORKER PAYMENT MODAL -->
+<div id="workerPaymentModal" class="hidden">
+    <div class="notif-box" style="text-align:center;">
+        <h3 style="margin-top:0; color:#1e293b;">🔐 వర్కర్ పేమెంట్ & OTP నిర్ధారణ</h3>
+        <p style="font-size:13px; color:#64748b;">వర్కర్‌కి చెప్పాల్సిన 4 అంకెల OTP:</p>
+        <input id="completionOtpInput" maxlength="4" inputmode="numeric" placeholder="4 Digit OTP" style="text-align:center; font-size:20px; font-weight:bold; letter-spacing:5px;">
+        <button class="primary" onclick="verifyCompletionOtp()" style="background:#2563eb; margin-bottom:12px;">✅ OTP వెరిఫై చేయి</button>
+
+        <div id="workerQrSection" class="hidden" style="border-top:2px dashed #cbd5e1; padding-top:12px; margin-top:10px;">
+            <p style="font-size:13px; color:#16a34a; font-weight:bold;">🎉 OTP వెరిఫై అయింది! పూర్తి పేమెంట్ ఆన్‌లైన్‌లో చేయండి:</p>
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:12px; display:inline-block; margin:10px 0;">
+                <span style="font-size:55px;">🧑‍🔧</span>
+                <p style="margin:5px 0 0 0; font-size:12px; font-weight:bold; color:#334155;">Worker Direct UPI QR</p>
+            </div>
+            <button class="primary" onclick="completeWorkerDirectPayment()" style="background:#16a34a;">💳 పూర్తి పేమెంట్ చెల్లించాను</button>
+        </div>
+        <button class="back" onclick="closeWorkerPaymentModal()" style="margin-top:10px; background:#475569; color:#fff;">మూసివేయి</button>
+    </div>
+</div>
+
+<!-- GPS LIVE MAP ROUTE MODAL -->
+<div id="mapModal" class="hidden">
+    <div class="notif-box" style="max-width:500px; height:450px; display:flex; flex-direction:column;">
+        <h3 style="margin-top:0; color:#1e293b;">🗺️ వర్కర్ లైవ్ రూట్ మ్యాప్</h3>
+        <div id="leafletMap" style="flex:1; width:100%; border-radius:12px; margin-bottom:12px;"></div>
+        <button class="primary" onclick="closeLiveMapModal()" style="background:#475569; margin:0;">మ్యాప్ మూసివేయి</button>
+    </div>
+</div>
+
+<div id="notificationsModal" class="hidden">
+    <div class="notif-box">
+        <h3 style="margin-top:0; color:#1e293b;">🔔 అడ్మిన్ నోటిఫికేషన్స్</h3>
+        <div id="notificationsListContainer" style="max-height:50vh; overflow-y:auto; margin-bottom:15px;">
+            <p style="color:#64748b;">సందేశాలు లేవు.</p>
+        </div>
+        <button class="primary" onclick="closeNotificationsModal()" style="background:#475569;">మూసివేయి</button>
+    </div>
+</div>
+
+<!-- NAV -->
 <nav id="nav" class="nav hidden">
-<button onclick="page('home',this)" class="active"><b>🏠</b><span>Home</span></button>
-<button onclick="page('bookings',this)"><b>📋</b><span>Bookings</span></button>
-<button onclick="page('ads',this)"><b>📢</b><span>Ads</span></button>
-<button onclick="page('profile',this)"><b>👤</b><span>Profile</span></button>
+<button onclick="page('home',this)" class="active" id="navHome"><b>🏠</b><span>హోమ్</span></button>
+<button onclick="page('bookings',this)" id="navBookings"><b>📋</b><span>బుకింగ్స్</span></button>
+<button onclick="page('ads',this)" id="navAds"><b>📢</b><span>యాడ్స్</span></button>
+<button onclick="page('pageProfile',this)" id="navProfile"><b>👤</b><span>ప్రొఫైల్</span></button>
 </nav>
 
 <div id="toast" class="toast hidden"></div>
 
 <script>
-document.addEventListener('contextmenu', e => e.preventDefault());
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById("pwaInstallBanner").classList.remove("hidden");
-});
-function installPWA() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
-  }
-}
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCM3qpjs92oS0L2kjRsHL7ilpUbMsd229E",
-  authDomain: "inti-mitra.firebaseapp.com",
-  projectId: "inti-mitra",
-  storageBucket: "inti-mitra.firebasestorage.app",
-  messagingSenderId: "254624886811",
-  appId: "1:254624886811:web:438bdddaaee3307545c8be"
-};
-
 let db = null;
 try {
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-} catch (e){}
+    firebase.initializeApp({
+        apiKey: "AIzaSyCM3qpjs92oS0L2kjRsHL7ilpUbMsd229E",
+        authDomain: "inti-mitra.firebaseapp.com",
+        projectId: "inti-mitra",
+        storageBucket: "inti-mitra.firebasestorage.app",
+        messagingSenderId: "254624886811",
+        appId: "1:254624886811:web:438bdddaaee3307545c8be"
+    });
+    db = firebase.firestore();
+} catch(e){}
 
-const workerServices = [
-  {id:'plumber', title:'Plumber', icon:'🔧', sub:'Pipe & Leakage'},
-  {id:'electrician', title:'Electrician', icon:'⚡', sub:'Wiring & Repair'},
-  {id:'mason', title:'బిల్డింగ్ మేస్త్రీ', icon:'🧱', sub:'Civil Work'},
-  {id:'carpenter', title:'Carpenter', icon:'🪚', sub:'Wood & Furniture'},
-  {id:'painter', title:'Painter', icon:'🎨', sub:'Wall Painting'},
-  {id:'ac', title:'AC Technician', icon:'❄️', sub:'AC Repair'}
+let currentLang="te";
+let selectedCustomService = "";
+let baseDailyRate = 1200;
+let adminAdvanceFee = 50;
+let customerRegFee = 10;
+let adMonthlyFee = 199;
+let adminUpiId = "intimitra@oksbi";
+let mapInstance = null;
+const langVoiceMap = { te: 'te-IN', hi: 'hi-IN', en: 'en-US' };
+
+const dailySlogans = [
+    '💡 "శ్రమే నిజమైన సంపద, కష్టపడి పనిచేసే ప్రతి ఒక్కరికీ భవిష్యత్తు ఉంటుంది."',
+    '🛠️ "చేతివృత్తే మనకు శ్రీరామరక్ష, నైపుణ్యంతోనే సమాజ అభివృద్ధి."',
+    '🌟 "ప్రతి పనీ పవిత్రమైనదే, చేసే విధానంలోనే దాని గొప్పతనం ఉంటుంది."',
+    '🤝 "నమ్మకమైన సేవయే ఇంటిమిత్ర యొక్క అసలైన విజయం."',
+    '⏰ "సమయపాలన మరియు నిజాయితీ ఏ పనిలోనైనా విజయానికి తొలి మెట్లు."'
 ];
 
-const helperServices = [
-  {id:'daily_helper', title:'సాధారణ హెల్పర్ / కూలీ', icon:'💪', sub:'Daily Labour'},
-  {id:'loading_helper', title:'లోడింగ్ & అన్‌లోడింగ్', icon:'📦', sub:'Heavy Goods'},
-  {id:'house_shifting', title:'ఇల్లు మార్పిడి హెల్పర్స్', icon:'🚛', sub:'Shifting'},
-  {id:'cooking_help', title:'వంట & గృహ సహాయం (ఆడవారు)', icon:'🍲', sub:'Cooking & House Help'},
-  {id:'tailoring_work', title:'టైలరింగ్ & కుట్టుపనులు', icon:'🧵', sub:'Tailoring'},
-  {id:'garden_helper', title:'గార్డెన్ పనులు', icon:'🌾', sub:'Garden Care'}
-];
+function stopAllSpeech() {
+    if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+}
 
-let currentCategory = "workers";
-let currentService = "";
-let currentWorkerData = null;
-let currentWorkerBaseWage = 350;
-let platformOfficialUpi = "intimitra@upi";
-let liveGeneratedOtp = null;
-let map = null, marker = null;
-let customerLat = 17.3850, customerLng = 78.4867;
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = langVoiceMap[currentLang] || 'te-IN';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    }
+}
 
-window.addEventListener('load', () => {
-  renderServices();
-  if(localStorage.getItem("user")) showApp();
+function readCurrentScreenText() {
+    stopAllSpeech();
+    let activeSection = document.querySelector("main > section:not(.hidden)");
+    if(activeSection) {
+        speakText(activeSection.innerText.replace(/[\n\r]+/g, '. '));
+    }
+}
+
+window.addEventListener("load", () => {
+    setDailySlogan();
+    fetchAdminSettings();
+    if(localStorage.getItem("phone")) { showApp(); }
 });
 
-function switchCategory(cat){
-  currentCategory = cat;
-  document.getElementById("tabWorkers").classList.toggle("active", cat === "workers");
-  document.getElementById("tabHelpers").classList.toggle("active", cat === "helpers");
-  renderServices();
+function setDailySlogan() {
+    const dayIndex = new Date().getDate() % dailySlogans.length;
+    const sloganEl = document.getElementById("dailySloganText");
+    if(sloganEl) sloganEl.innerText = dailySlogans[dayIndex];
 }
 
-function renderServices(){
-  const grid = document.getElementById("servicesGrid");
-  const list = currentCategory === "workers" ? workerServices : helperServices;
-  grid.innerHTML = list.map(s => `
-    <div class="service" onclick="loadWorkersList('${s.title}')">
-      <div class="icon">${s.icon}</div>
-      <b>${s.title}</b>
-      <div class="small">${s.sub}</div>
-    </div>
-  `).join("");
+// ✨ Fetch Admin Global Logo, Fees, and Festival Banner Live from Firestore
+function fetchAdminSettings() {
+    if(!db) return;
+    db.collection("settings").doc("general").onSnapshot(doc => {
+        if(doc.exists) {
+            const data = doc.data();
+            if(data.adminAdvanceFee !== undefined) adminAdvanceFee = data.adminAdvanceFee;
+            if(data.customerRegFee !== undefined) {
+                customerRegFee = data.customerRegFee;
+                document.getElementById("dynamicRegFeeText").innerText = "₹" + customerRegFee;
+            }
+            if(data.adMonthlyFee !== undefined) adMonthlyFee = data.adMonthlyFee;
+            if(data.adminUpiId !== undefined) adminUpiId = data.adminUpiId;
+
+            // Global Logo Control
+            if(data.appLogo) {
+                const logoImg = document.getElementById("hdrLogoImg");
+                const fallbackIcon = document.getElementById("hdrFallbackIcon");
+                if(logoImg && fallbackIcon) {
+                    logoImg.src = data.appLogo;
+                    logoImg.classList.remove("hidden");
+                    fallbackIcon.classList.add("hidden");
+                }
+            }
+
+            // Festival / Event Greeting Banner Control
+            if(data.festivalBannerText) {
+                const bannerBox = document.getElementById("festivalBannerBox");
+                const bannerTitle = document.getElementById("festivalBannerTitle");
+                const bannerText = document.getElementById("festivalBannerText");
+                if(bannerBox && bannerText) {
+                    bannerTitle.innerText = data.festivalBannerTitle || "🎉 ప్రత్యేక శుభాకాంక్షలు!";
+                    bannerText.innerText = data.festivalBannerText;
+                    bannerBox.classList.remove("hidden");
+                }
+            } else {
+                const bannerBox = document.getElementById("festivalBannerBox");
+                if(bannerBox) bannerBox.classList.add("hidden");
+            }
+        }
+    });
 }
 
-function sendOTP(){
-  const n = document.getElementById("name").value.trim();
-  const p = document.getElementById("phone").value.trim();
-  if(!n || !/^[0-9]{10}$/.test(p)){ toast("⚠️ సరైన పేరు మరియు 10 అంకెల నంబర్ ఇవ్వండి!"); return; }
-  localStorage.setItem("tempName", n);
-  localStorage.setItem("tempPhone", p);
-  liveGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-  document.getElementById("loginInputFields").classList.add("hidden");
-  document.getElementById("otpSection").classList.remove("hidden");
-  alert(`📲 OTP: ${liveGeneratedOtp}`);
+function calculateTotalPayment() {
+    const days = parseInt(document.getElementById("numberOfDays").value) || 1;
+    const total = baseDailyRate * days;
+    document.getElementById("estimatedTotalDisplay").innerText = `₹${total} (${days} రోజులకు)`;
+    document.getElementById("adminAdvanceDisplay").innerText = `₹${adminAdvanceFee}`;
 }
 
-function resendOrChangeNumber(){
-  document.getElementById("otpSection").classList.add("hidden");
-  document.getElementById("loginInputFields").classList.remove("hidden");
+function saveEditedProfile() {
+    const newName = document.getElementById("editCustName").value.trim();
+    const newUpi = document.getElementById("editCustUpi").value.trim();
+    if(!newName) { toast("⚠️ పేరు తప్పనిసరి!"); return; }
+    localStorage.setItem("user", newName);
+    localStorage.setItem("customerUpi", newUpi);
+    document.getElementById("homeName").innerText = newName;
+    toast("✅ ప్రొఫైల్ వివరాలు విజయవంతంగా సేవ్ చేయబడ్డాయి!");
 }
 
-function verifyOTP(){
-  if(document.getElementById("otp").value.trim() !== liveGeneratedOtp){ toast("❌ తప్పుడు OTP!"); return; }
-  localStorage.setItem("user", localStorage.getItem("tempName"));
-  localStorage.setItem("phone", localStorage.getItem("tempPhone"));
-  showApp();
+function uploadCustomerPhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const photoBase64 = e.target.result;
+            localStorage.setItem("customerPhoto", photoBase64);
+            displayCustomerPhoto(photoBase64);
+            toast("✅ ప్రొఫైల్ ఫోటో అప్‌డేట్ చేయబడింది!");
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function displayCustomerPhoto(url) {
+    const img = document.getElementById("custProfileImg");
+    const fallback = document.getElementById("custProfileFallback");
+    if(url) {
+        img.src = url; img.style.display = "block"; fallback.style.display = "none";
+    } else {
+        img.style.display = "none"; fallback.style.display = "block";
+    }
+}
+
+function openWorkerPaymentModal() { document.getElementById("workerPaymentModal").classList.remove("hidden"); }
+function closeWorkerPaymentModal() { document.getElementById("workerPaymentModal").classList.add("hidden"); document.getElementById("workerQrSection").classList.add("hidden"); }
+
+function verifyCompletionOtp() {
+    const otp = document.getElementById("completionOtpInput").value.trim();
+    if(otp === "1234" || otp.length === 4) {
+        toast("✅ OTP వెరిఫై అయింది!");
+        document.getElementById("workerQrSection").classList.remove("hidden");
+    } else {
+        toast("❌ తప్పు OTP! (Demo: 1234)");
+    }
+}
+
+function completeWorkerDirectPayment() {
+    toast("✅ వర్కర్‌కి పూర్తి పేమెంట్ విజయవంతంగా చెల్లించబడింది!");
+    closeWorkerPaymentModal();
+    setTimeout(() => page("home"), 1000);
+}
+
+function openLiveMapModal() {
+    document.getElementById("mapModal").classList.remove("hidden");
+    setTimeout(() => {
+        if(!mapInstance) {
+            mapInstance = L.map('leafletMap').setView([17.3850, 78.4867], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
+            L.marker([17.3850, 78.4867]).addTo(mapInstance).bindPopup("<b>వర్కర్ లొకేషన్</b>").openPopup();
+        } else {
+            mapInstance.invalidateSize();
+        }
+    }, 300);
+}
+function closeLiveMapModal() { document.getElementById("mapModal").classList.add("hidden"); }
+
+function openNotificationsModal() { document.getElementById("notificationsModal").classList.remove("hidden"); }
+function closeNotificationsModal() { document.getElementById("notificationsModal").classList.add("hidden"); }
+
+async function checkUserRegistration() {
+    const phone = document.getElementById("phone").value.trim();
+    if(!/^[0-9]{10}$/.test(phone)) { toast("⚠️ 10 అంకెల నంబర్ ఇవ్వండి"); return; }
+    localStorage.setItem("pendingPhone", phone);
+
+    if(db) {
+        const docSnap = await db.collection("customers").doc(phone).get();
+        if(docSnap.exists) {
+            document.getElementById("phoneCheckSection").classList.add("hidden");
+            document.getElementById("otpBoxSection").classList.remove("hidden");
+            toast("🧪 Demo OTP: 123456");
+        } else {
+            document.getElementById("phoneCheckSection").classList.add("hidden");
+            document.getElementById("registerSection").classList.remove("hidden");
+        }
+    } else {
+        document.getElementById("phoneCheckSection").classList.add("hidden");
+        document.getElementById("registerSection").classList.remove("hidden");
+    }
+}
+
+async function payRegistrationFee() {
+    const name = document.getElementById("regName").value.trim();
+    if(!name) { toast("⚠️ పేరు ఇవ్వండి!"); return; }
+    const phone = localStorage.getItem("pendingPhone");
+
+    let custId = "IM-CUST-" + Math.floor(1000 + Math.random() * 9000);
+    localStorage.setItem("custId", custId);
+    localStorage.setItem("user", name);
+    localStorage.setItem("phone", phone);
+
+    if(db) {
+        await db.collection("customers").doc(phone).set({
+            name, phone, custId, feePaid: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    }
+
+    toast(`💳 ₹${customerRegFee} రిజిస్ట్రేషన్ ఫీజు చెల్లింపు విజయవంతం!`);
+    document.getElementById("registerSection").classList.add("hidden");
+    showApp();
+}
+
+function verifyOTP() {
+    if(document.getElementById("otp").value.trim() !== "123456") { toast("❌ తప్పు OTP"); return; }
+    localStorage.setItem("phone", localStorage.getItem("pendingPhone") || "9999999999");
+    localStorage.setItem("user", "గృహస్థు " + localStorage.getItem("phone").slice(-4));
+    let custId = localStorage.getItem("custId") || "IM-CUST-" + Math.floor(1000 + Math.random() * 9000);
+    localStorage.setItem("custId", custId);
+    showApp();
 }
 
 function showApp(){
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-  document.getElementById("nav").classList.remove("hidden");
-  document.getElementById("homeName").innerText = localStorage.getItem("user");
-  document.getElementById("headerUser").innerText = localStorage.getItem("user");
-  document.getElementById("profileName").innerText = localStorage.getItem("user");
-  document.getElementById("profilePhone").innerText = "+91 " + localStorage.getItem("phone");
-  listenToBookings();
-  page("home");
+    stopAllSpeech();
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("nav").classList.remove("hidden");
+
+    const custId = localStorage.getItem("custId") || "IM-CUST-8492";
+    const userName = localStorage.getItem("user") || "గృహస్థు";
+    const userPhone = localStorage.getItem("phone") || "";
+    const userUpi = localStorage.getItem("customerUpi") || "";
+
+    document.getElementById("dashCustId").innerText = custId;
+    document.getElementById("profCustId").innerText = custId;
+    document.getElementById("homeName").innerText = userName;
+    document.getElementById("editCustName").value = userName;
+    document.getElementById("editCustPhone").value = "+91 " + userPhone;
+    document.getElementById("editCustUpi").value = userUpi;
+
+    const savedPhoto = localStorage.getItem("customerPhoto") || "";
+    displayCustomerPhoto(savedPhoto);
+
+    renderAdsMarketFeed();
+    page("home");
 }
 
-function page(id){
-  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-  window.scrollTo(0,0);
+function logout(){ stopAllSpeech(); localStorage.clear(); location.reload(); }
+
+function page(id, b){
+    stopAllSpeech();
+    document.querySelectorAll("main section").forEach(x=>x.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+    document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+    if(b) b.classList.add("active");
+    window.scrollTo(0,0);
+    if(id === 'ads') renderAdsMarketFeed();
 }
 
-async function loadWorkersList(service){
-  currentService = service;
-  page('workers');
-  let workers = [];
-  if(db){
-    const snap = await db.collection("workers").where("service", "==", service).get();
-    snap.forEach(doc => workers.push(doc.data()));
-  }
-  if(!workers.length){
-    workers = [{ name: "ప్రసాద్ / లక్ష్మి", phone: "9876543210", service, wage: 350, lat: 17.3900, lng: 78.4900 }];
-  }
-  document.getElementById("workerList").innerHTML = workers.map(w => `
-    <div class="worker card">
-      <div><b>👷 ${w.name}</b></div>
-      <p style="color:#64748b; font-size:13px; margin:6px 0;">💰 కూలీ: ₹${w.wage}</p>
-      <button class="book" onclick="openBookModal(${JSON.stringify(w).replace(/"/g, '&quot;')})">📋 బుక్ చేయండి</button>
-    </div>
-  `).join("");
+function workersPage(s, rate){
+    stopAllSpeech();
+    selectedCustomService = s;
+    baseDailyRate = rate;
+    document.getElementById("bookingServiceName").innerText = s + ` (₹${rate}/రోజు)`;
+    document.getElementById("numberOfDays").value = "1";
+    calculateTotalPayment();
+    page("bookingPage");
 }
 
-function bookCustomWork(){
-  const customName = document.getElementById("customWorkTitle").value.trim();
-  if(!customName){ toast("⚠️ పని పేరు రాయండి!"); return; }
-  currentService = "Custom: " + customName;
-  openBookModal({ name: "అందుబాటులో ఉన్న వర్కర్", phone: "9876543210", service: currentService, wage: 350, lat: customerLat, lng: customerLng });
-}
-
-function openBookModal(workerObj){
-  currentWorkerData = workerObj;
-  currentWorkerBaseWage = Number(workerObj.wage) || 350;
-  page('bookingPage');
-  document.getElementById("selected").innerHTML = `📁 ${currentService} • 👤 ${workerObj.name}`;
-  initMap();
-  document.getElementById("lblWorkerBaseFare").innerText = "₹" + currentWorkerBaseWage;
-  document.getElementById("lblTotalWorkerWage").innerText = "₹" + currentWorkerBaseWage;
-}
-
-function initMap(){
-  setTimeout(() => {
-    if(!map){
-      map = L.map('mapContainer').setView([customerLat, customerLng], 14);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-      marker = L.marker([customerLat, customerLng], {draggable: true}).addTo(map);
+async function searchCustomWorkersAndBook() {
+    const queryText = document.getElementById("customSearchInput").value.trim();
+    const genderPref = document.getElementById("preferredGenderSelect").value;
+    
+    if(!queryText) {
+        toast("⚠️ దయచేసి కావలసిన పని పేరు టైప్ చేయండి!");
+        return;
     }
-  }, 300);
-}
 
-function detectCurrentLocation(){
-  if(!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition((pos) => {
-    customerLat = pos.coords.latitude;
-    customerLng = pos.coords.longitude;
-    if(map && marker){
-      map.setView([customerLat, customerLng], 15);
-      marker.setLatLng([customerLat, customerLng]);
+    toast("⏳ వర్కర్ల కోసం వెతుకుతోంది...");
+    const resultContainer = document.getElementById("customWorkersResultContainer");
+    resultContainer.classList.remove("hidden");
+    resultContainer.innerHTML = `<div class="card" style="text-align:center; color:#2563eb;">వర్కర్లు లోడ్ అవుతున్నారు...</div>`;
+
+    if(db) {
+        try {
+            let snapshot = await db.collection("workers").where("isOnline", "==", true).get();
+            let workersList = [];
+            
+            snapshot.forEach(doc => {
+                let w = doc.data();
+                if(genderPref === "Any" || w.gender === genderPref) {
+                    if(w.skills && w.skills.toLowerCase().includes(queryText.toLowerCase())) {
+                        workersList.push(w);
+                    }
+                }
+            });
+
+            if(workersList.length === 0) {
+                resultContainer.innerHTML = `
+                    <div class="card" style="text-align:center;">
+                        <p style="color:#dc2626; font-weight:bold;">క్షమించండి, "${queryText}" కి సంబంధించిన ఆన్‌లైన్ వర్కర్లు ప్రస్తుతం అందుబాటులో లేరు.</p>
+                        <p style="font-size:13px; color:#64748b;">దయచేసి వేరే పదంతో ప్రయత్నించండి.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `<h3 style="color:#1e293b; font-size:16px;">🛠️ "${queryText}" కోసం దొరికిన వర్కర్లు:</h3>`;
+            workersList.forEach(w => {
+                html += `
+                    <div class="card" style="background:#fff; border:1px solid #cbd5e1; padding:15px; border-radius:14px; margin-bottom:10px; text-align:left;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h4 style="margin:0; color:#1e293b;">👷‍♂️ ${esc(w.name)} (${w.gender || 'General'})</h4>
+                            <span style="background:#dcfce7; color:#166534; font-size:11px; font-weight:bold; padding:3px 8px; border-radius:8px;">🟢 ఆన్‌లైన్</span>
+                        </div>
+                        <p style="margin:6px 0; font-size:13px; color:#475569;"><b>నైపుణ్యాలు:</b> ${esc(w.skills)}</p>
+                        <p style="margin:0 0 10px 0; font-size:13px; color:#16a34a;"><b>బేస్ ఛార్జ్:</b> ₹${w.wage || 350} / రోజు</p>
+                        <button class="primary" onclick="bookCustomWorker('${esc(queryText)}', '${esc(w.name)}', ${w.wage || 350})" style="background:#16a34a; padding:10px; font-size:14px;">✅ ఈ వర్కర్‌ని బుక్ చేయి</button>
+                    </div>
+                `;
+            });
+            resultContainer.innerHTML = html;
+
+        } catch(e) {
+            toast("⚠️ వర్కర్లను వెతకడంలో సాంకేతిక సమస్య ఎదురైంది.");
+        }
     }
-  });
 }
 
-async function saveBooking(){
-  const address = document.getElementById("address").value.trim() || "Local";
-  const bookingId = "BK" + Date.now();
-  const completionOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-  const newBooking = {
-    id: bookingId,
-    customerName: localStorage.getItem("user"),
-    customerPhone: localStorage.getItem("phone"),
-    customerLocation: { address, lat: customerLat, lng: customerLng },
-    service: currentService,
-    assignedWorker: currentWorkerData,
-    totalWorkerWage: currentWorkerBaseWage,
-    completionOtp: completionOtp,
-    status: "Confirmed",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-
-  if(db) await db.collection("bookings").doc(bookingId).set(newBooking);
-  toast("✅ బుకింగ్ పూర్తయింది!");
-  page("bookings");
+function bookCustomWorker(serviceName, workerName, wageRate) {
+    selectedCustomService = serviceName + ` (వర్కర్: ${workerName})`;
+    baseDailyRate = wageRate;
+    document.getElementById("bookingServiceName").innerText = selectedCustomService;
+    document.getElementById("numberOfDays").value = "1";
+    calculateTotalPayment();
+    page("bookingPage");
 }
 
-function listenToBookings(){
-  const phone = localStorage.getItem("phone");
-  if(!phone || !db) return;
-  db.collection("bookings").where("customerPhone", "==", phone).onSnapshot(snap => {
-    let list = [];
-    snap.forEach(doc => list.push(doc.data()));
-    document.getElementById("bookingList").innerHTML = list.map(b => `
-      <div class="card">
-        <h3>${b.service} - <span>${b.status}</span></h3>
-        <p style="font-size:13px;">🔑 OTP: <b style="color:#b45309; font-size:16px;">${b.completionOtp}</b></p>
-        <p style="font-size:13px;">💰 బిల్లు: ₹${b.totalWorkerWage}</p>
-      </div>
-    `).join("");
-  });
-}
+async function payAdminAdvanceAndBook(){
+    stopAllSpeech();
+    const address = document.getElementById("address").value.trim();
+    const date = document.getElementById("date").value;
+    const days = document.getElementById("numberOfDays").value;
+    const totalAmount = baseDailyRate * parseInt(days);
 
-function triggerCustomerSOS(){
-  if(navigator.geolocation && db){
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      await db.collection("sos_alerts").add({
-        type: "Customer SOS", name: localStorage.getItem("user"),
-        phone: localStorage.getItem("phone"),
-        locationUrl: `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`,
+    if(!address || !date) { toast("⚠️ అడ్రస్ మరియు తేదీ ఇవ్వండి!"); return; }
+
+    toast(`💳 అడ్మిన్ అడ్వాన్స్ ₹${adminAdvanceFee} ఆన్‌లైన్ పేమెంట్ విజయవంతమైంది! బుకింగ్ కన్ఫర్మ్ అయింది.`);
+
+    const bookingData = {
+        service: selectedCustomService,
+        address, date, days, totalAmount,
+        advancePaid: adminAdvanceFee,
+        paymentStatus: "Admin Advance Paid",
+        customerName: localStorage.getItem("user") || "User",
+        phone: localStorage.getItem("phone") || "",
+        status: "Worker Assigned",
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert("🚨 SOS అలర్ట్ పంపబడింది!");
-    });
-  }
+    };
+
+    if(db) { await db.collection("bookings").add(bookingData); }
+    setTimeout(()=> page("bookings"), 600);
 }
 
-function startVoiceAssistant(){
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRec) return;
-  const rec = new SpeechRec();
-  toast("🎤 మాట్లాడండి...");
-  rec.onresult = (e) => {
-    const text = e.results[0][0].transcript;
-    document.getElementById("customWorkTitle").value = text;
-    toast("🗣️ " + text);
-  };
-  rec.start();
+async function postAdWithMedia(){
+    stopAllSpeech();
+    const title = document.getElementById("adTitle").value.trim();
+    const desc = document.getElementById("adDesc").value.trim();
+    const phone = document.getElementById("adPhone").value.trim();
+    const mediaFile = document.getElementById("adMediaFile").files[0];
+
+    if(!title || !desc || !phone) { toast("⚠️ అన్ని వివరాలు ఇవ్వండి!"); return; }
+
+    const saveToCloud = async (mUrl, mType) => {
+        const adData = {
+            title, desc, phone, mediaUrl: mUrl, mediaType: mType,
+            postedBy: localStorage.getItem("user") || "User",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            isPaid: false
+        };
+        if(db) { 
+            await db.collection("local_ads").add(adData); 
+        }
+        document.getElementById("adTitle").value="";
+        document.getElementById("adDesc").value="";
+        document.getElementById("adPhone").value="";
+        document.getElementById("adMediaFile").value="";
+        renderAdsMarketFeed();
+        toast("🚀 ప్రకటన 3 రోజులు ఉచితంగా పోస్ట్ చేయబడింది!");
+    };
+
+    if(mediaFile) {
+        const reader = new FileReader();
+        reader.onload = async function(e) { await saveToCloud(e.target.result, mediaFile.type); };
+        reader.readAsDataURL(mediaFile);
+    } else { await saveToCloud("", ""); }
 }
 
-function logout(){
-  localStorage.clear();
-  location.reload();
+async function renderAdsMarketFeed() {
+    const container = document.getElementById("allAdsFeedContainer");
+    if(!container) return;
+    
+    if(db) {
+        try {
+            db.collection("local_ads").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                if(snapshot.empty) {
+                    container.innerHTML = `<p style="color:#64748b; text-align:center;">ప్రస్తుతం ఎలాంటి ప్రకటనలు లేవు.</p>`;
+                    return;
+                }
+                let html = "";
+                snapshot.forEach(doc => {
+                    let a = doc.data();
+                    a.id = doc.id;
+                    html += generateAdCardHTML(a);
+                });
+                container.innerHTML = html;
+            });
+        } catch(e) {
+            container.innerHTML = `<p style="color:#64748b; text-align:center;">ప్రకటనలు లోడ్ చేయడంలో సమస్య.</p>`;
+        }
+    }
 }
 
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.classList.remove("hidden");
-  setTimeout(() => t.classList.add("hidden"), 3000);
+function generateAdCardHTML(a) {
+    let isExpired = false;
+    if(a.createdAt && a.createdAt.toDate && !a.isPaid) {
+        let postDate = a.createdAt.toDate();
+        let currentDate = new Date();
+        let diffDays = (currentDate - postDate) / (1000 * 60 * 60 * 24);
+        if(diffDays > 3) {
+            isExpired = true;
+        }
+    }
+
+    return `
+        <div style="background:#fff; border:1px solid ${isExpired ? '#ef4444' : '#cbd5e1'}; padding:16px; border-radius:14px; margin-bottom:12px; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="margin:0; color:#1e293b;">📢 ${esc(a.title)}</h4>
+                ${isExpired ? 
+                    `<span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:bold; padding:3px 8px; border-radius:8px;">⚠️ గడువు ముగిసింది</span>` : 
+                    `<span style="background:#dcfce7; color:#166534; font-size:11px; font-weight:bold; padding:3px 8px; border-radius:8px;">⏳ 3 Days Free</span>`
+                }
+            </div>
+            <p style="margin:8px 0; color:#475569;">${esc(a.desc)}</p>
+            ${a.mediaUrl && a.mediaType && a.mediaType.includes("video") ? `<video src="${a.mediaUrl}" controls style="width:100%; max-height:200px; border-radius:10px;"></video>` : (a.mediaUrl ? `<img src="${a.mediaUrl}" style="width:100%; max-height:200px; object-fit:cover; border-radius:10px;" alt="Ad Image">` : ``)}
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:13px;">
+                <span>పోస్ట్: <b>${esc(a.postedBy)}</b></span>
+                
+                <div style="display:flex; gap:6px; align-items:center;">
+                    ${isExpired ? 
+                        `<button onclick="payForAdExtension('${a.id}')" style="background:#f59e0b; color:#000; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">💳 పేమెంట్ చేయి (₹${adMonthlyFee})</button>` : 
+                        (a.phone ? `<a href="tel:${a.phone}" style="background:#16a34a; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:bold;">📞 కాల్ చేయి (${a.phone})</a>` : ``)
+                    }
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function payForAdExtension(adId) {
+    let confirmPay = confirm(`లోకల్ యాడ్ 3 రోజుల ఉచిత గడువు ముగిసింది. ప్రకటనను కొనసాగించడానికి ₹${adMonthlyFee} అడ్మిన్ UPI (${adminUpiId}) కి చెల్లించాలా?`);
+    if(confirmPay) {
+        if(db) {
+            db.collection("local_ads").doc(adId).update({
+                isPaid: true,
+                paidAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                toast("💳 పేమెంట్ విజయవంతం! మీ యాడ్ రెన్యూవల్ చేయబడింది.");
+            });
+        }
+    }
+}
+
+function triggerSOS() { toast("🚨 అత్యవసర SOS ఓపెన్ అయింది"); }
+function esc(x){ return String(x??"").replace(/[&<>"']/g, c=>({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c])); }
+
+let toastTimer;
+function toast(text){
+    const t = document.getElementById("toast");
+    t.innerText = text; t.classList.add("hidden"); t.classList.remove("hidden");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>t.classList.add("hidden"), 3000);
 }
 </script>
 </body>

@@ -2,7 +2,7 @@
 <html lang="te">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0f172a">
 <title>INTI MITRA - Master Control & Accounts Center</title>
 
@@ -15,53 +15,49 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#0f172a;color:#f8fafc;font-family:Arial,sans-serif;padding-bottom:90px}
-.hidden{display:none!important}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; background: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding-bottom: 90px; }
+.hidden { display: none !important; }
 
-header{position:sticky;top:0;z-index:1000;background:#1e293b;color:#fff;padding:14px 18px;border-bottom:1px solid #334155;display:flex;align-items:center;justify-content:space-between}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-logo-container{width:46px;height:46px;border-radius:12px;background:#0f172a;display:flex;align-items:center;justify-content:center;border:2px solid #38bdf8;overflow:hidden}
-.brand-logo-img{width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
-.logoText{font-size:18px;font-weight:900;color:#fff;letter-spacing:0.5px}
+header { position: sticky; top: 0; z-index: 1000; background: #1e293b; color: #fff; padding: 12px 16px; border-bottom: 1px solid #334155; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 10px; }
 
-main{max-width:900px;margin:auto;padding:16px}
-.card{background:#1e293b;border-radius:20px;padding:20px;margin-bottom:16px;border:1px solid #334155}
+.brand-logo-container { width: 42px; height: 42px; border-radius: 10px; background: #0f172a; display: flex; align-items: center; justify-content: center; border: 2px solid #38bdf8; overflow: hidden; flex-shrink: 0; }
+.brand-logo-img { width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 2px; }
 
-.tx-box{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;margin:8px 0;font-size:13px}
-.tx-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.logoText { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
 
-.setting-box{background:#0f172a;border:1px solid #334155;border-radius:16px;padding:14px;margin-bottom:14px}
-.setting-box label{font-size:13px;font-weight:bold;color:#cbd5e1;display:block;margin-bottom:6px}
-.setting-row{display:flex;gap:8px;align-items:center}
-.setting-row input{margin:0;flex:1}
+main { max-width: 800px; margin: auto; padding: 12px; }
+.card { background: #1e293b; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
 
-input,select,textarea,button{font:inherit}
-input,select,textarea{width:100%;padding:12px 14px;border:1px solid #475569;border-radius:12px;outline:none;background:#1e293b;color:#fff}
-input:focus{border-color:#38bdf8}
+.setting-box { background: #0f172a; border: 1px solid #334155; border-radius: 14px; padding: 12px; margin-bottom: 12px; }
+.setting-box label { font-size: 13px; font-weight: bold; color: #cbd5e1; display: block; margin-bottom: 6px; }
+.setting-row { display: flex; gap: 8px; align-items: center; }
+.setting-row input { margin: 0; flex: 1; }
 
-button.primary{background:#38bdf8;color:#0f172a;width:100%;padding:14px;border:none;border-radius:14px;font-weight:bold;margin-top:8px;cursor:pointer}
-button.save-btn{background:#38bdf8;color:#0f172a;border:none;padding:12px 18px;border-radius:12px;font-weight:bold;cursor:pointer;white-space:nowrap}
-button.danger{background:#ef4444;color:#fff;border:none;padding:8px 14px;border-radius:10px;font-weight:bold;cursor:pointer}
-button.success{background:#10b981;color:#fff;border:none;padding:8px 14px;border-radius:10px;font-weight:bold;cursor:pointer}
+input, select, textarea, button { font: inherit; }
+input, select, textarea { width: 100%; padding: 12px 14px; border: 1px solid #475569; border-radius: 12px; outline: none; background: #1e293b; color: #fff; font-size: 14px; }
+input:focus, textarea:focus { border-color: #38bdf8; }
 
-#adminMasterMap{width:100%;height:420px;border-radius:16px;margin:12px 0;border:2px solid #38bdf8;z-index:10}
+button.primary { background: #38bdf8; color: #0f172a; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; margin-top: 8px; cursor: pointer; }
+button.save-btn { background: #38bdf8; color: #0f172a; border: none; padding: 12px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+button.danger { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat-box{background:#334155;padding:14px 10px;border-radius:16px;text-align:center;border:1px solid #475569}
-.stat-box b{font-size:18px;color:#38bdf8;display:block}
-.stat-box span{font-size:11px;color:#94a3b8}
+#adminMasterMap { width: 100%; height: 380px; border-radius: 14px; margin: 10px 0; border: 2px solid #38bdf8; z-index: 10; }
+.leaflet-control-attribution { pointer-events: none !important; opacity: 0.7; }
 
-.badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:bold}
-.badge-success{background:#065f46;color:#34d399}
-.badge-pending{background:#854d0e;color:#fde047}
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+@media(min-width: 600px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+.stat-box { background: #334155; padding: 12px 8px; border-radius: 14px; text-align: center; border: 1px solid #475569; }
+.stat-box b { font-size: 16px; color: #38bdf8; display: block; word-break: break-all; }
+.stat-box span { font-size: 11px; color: #94a3b8; }
 
-.nav{position:fixed;bottom:0;left:0;right:0;height:75px;background:#1e293b;display:grid;grid-template-columns:repeat(5,1fr);z-index:500;border-top:1px solid #334155}
-.nav button{background:transparent;color:#94a3b8;border:none;font-size:10px;font-weight:600;cursor:pointer}
-.nav button b{display:block;font-size:18px;margin-bottom:2px}
-.nav .active{color:#38bdf8}
+.nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #1e293b; display: grid; grid-template-columns: repeat(7, 1fr); z-index: 500; border-top: 1px solid #334155; }
+.nav button { background: transparent; color: #94a3b8; border: none; font-size: 8px; font-weight: 600; cursor: pointer; padding: 4px 0; }
+.nav button b { display: block; font-size: 14px; margin-bottom: 2px; }
+.nav .active { color: #38bdf8; }
 
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:12px 20px;border-radius:14px;z-index:3000;border:1px solid #38bdf8}
+.toast { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 10px 16px; border-radius: 12px; z-index: 3000; border: 1px solid #38bdf8; font-size: 13px; text-align: center; max-width: 90%; }
 </style>
 </head>
 
@@ -70,22 +66,22 @@ button.success{background:#10b981;color:#fff;border:none;padding:8px 14px;border
 <header>
   <div class="brand">
     <div class="brand-logo-container">
-      <span id="hdrFallbackIcon" style="font-size:24px;">🏛️</span>
+      <span id="hdrFallbackIcon" style="font-size:20px;">🏛️</span>
       <img id="hdrLogoImg" class="brand-logo-img hidden" alt="Admin Logo">
     </div>
     <div>
       <div class="logoText">INTI MITRA</div>
-      <small style="color:#38bdf8; font-size:11px;">Master Control Center</small>
+      <small style="color:#38bdf8; font-size:10px;">Master Control Center</small>
     </div>
   </div>
-  <button id="hdrLogoutBtn" class="danger hidden" onclick="adminLogout()" style="padding:6px 12px; font-size:12px;">🚪 Logout</button>
+  <button id="hdrLogoutBtn" class="danger hidden" onclick="adminLogout()" style="padding:6px 10px; font-size:11px;">🚪 Logout</button>
 </header>
 
 <!-- ADMIN LOGIN -->
-<section id="adminLogin" style="max-width:400px; margin:40px auto; padding:16px;">
+<section id="adminLogin" style="max-width:380px; margin:40px auto; padding:12px;">
 <div class="card" style="text-align:center;">
-  <h2>Master Admin Portal</h2>
-  <input type="password" id="adminPass" placeholder="Admin Passcode (Default: 9999)">
+  <h2 style="margin-top:0; font-size:20px;">Master Admin Portal</h2>
+  <input type="password" id="adminPass" placeholder="Admin Passcode (Default: 9999)" style="margin-bottom:10px;">
   <button class="primary" onclick="verifyAdminLogin()">🔓 Login</button>
 </div>
 </section>
@@ -93,109 +89,150 @@ button.success{background:#10b981;color:#fff;border:none;padding:8px 14px;border
 <!-- MAIN DASHBOARD -->
 <main id="adminApp" class="hidden">
 
-<!-- OVERVIEW & FINANCIAL STATS -->
 <section id="tabOverview">
   <div class="stats-grid">
     <div class="stat-box"><b id="statTotalBookings">0</b><span>మొత్తం ఆర్డర్లు</span></div>
-    <div class="stat-box"><b id="statTotalRevenue">₹0</b><span>మొత్తం QR కలెక్షన్</span></div>
-    <div class="stat-box"><b id="statAdminCommission" style="color:#34d399;">₹0</b><span>యాప్ కమీషన్ ఆదాయం</span></div>
-    <div class="stat-box"><b id="statWorkerPayouts" style="color:#f59e0b;">₹0</b><span>వర్కర్లకు వెళ్లాల్సినవి</span></div>
+    <div class="stat-box"><b id="statTotalConfirmFee">₹0</b><span>మొత్తం కన్ఫర్మ్ ఛార్జ్</span></div>
+    <div class="stat-box"><b id="statAdminCommission" style="color:#34d399;">₹0</b><span>కమీషన్ ఆదాయం</span></div>
+    <div class="stat-box"><b id="statWorkerPayouts" style="color:#f59e0b;">₹0</b><span>వర్కర్లకు వెళ్లాలి</span></div>
   </div>
 
   <div class="card">
-    <h3 style="margin-top:0; color:#38bdf8;">⚡ లైవ్ సిస్టమ్ కాన్ఫిగరేషన్</h3>
-    <p style="font-size:13px; color:#cbd5e1; margin:4px 0;">గరిష్ట కూలీ పరిమితి (Max Cap): <b id="dashMaxWage" style="color:#fde047;">₹1200</b></p>
-    <p style="font-size:13px; color:#cbd5e1; margin:4px 0;">అధికారిక UPI ID: <b id="dashAdminUpi" style="color:#34d399;">intimitra@upi</b></p>
-    <p style="font-size:13px; color:#cbd5e1; margin:4px 0;">ఉచిత ప్రయాణ పరిమితి: <b id="dashFreeKm">3 KM</b> | కమీషన్: <b id="dashComm">10%</b></p>
+    <h3 style="margin-top:0; color:#38bdf8; font-size:16px;">⚡ లైవ్ సిస్టమ్ కాన్ఫిగరేషన్</h3>
+    <p style="font-size:13px; color:#cbd5e1; margin:6px 0;">కస్టమర్ రిజిస్ట్రేషన్ ఫీజు: <b id="dashRegFee" style="color:#34d399;">₹10</b></p>
+    <p style="font-size:13px; color:#cbd5e1; margin:6px 0;">పార్టనర్ రిజిస్ట్రేషన్ ఫీజు: <b id="dashPartnerRegFee" style="color:#34d399;">₹10</b></p>
+    <p style="font-size:13px; color:#cbd5e1; margin:6px 0;">బుకింగ్ కన్ఫర్మ్ ఛార్జ్: <b id="dashConfirmFee" style="color:#38bdf8;">₹50</b></p>
+    <p style="font-size:13px; color:#cbd5e1; margin:6px 0;">3-డేస్ ట్రయల్ తర్వాత పేమెంట్: <b id="dashTrialFee" style="color:#f59e0b;">₹199</b></p>
+    <p style="font-size:13px; color:#cbd5e1; margin:6px 0;">అడ్మిన్ డైరెక్ట్ UPI ID: <b id="dashAdminUpiDisplay" style="color:#22c55e;">-</b></p>
   </div>
 </section>
 
-<!-- FULL BOOKINGS & TRANSACTIONS DETAILS -->
-<section id="tabBookings" class="hidden">
+<section id="tabComplaints" class="hidden">
+  <div class="card" style="padding:12px;">
+    <h2 style="margin:0 0 4px 0; color:#ef4444; font-size:18px;">🚨 కంప్లైంట్లు & సూచనల ఇన్బాక్స్</h2>
+  </div>
+  <div id="adminComplaintsList"></div>
+</section>
+
+<section id="tabSearch" class="hidden">
   <div class="card">
-    <h2 style="margin:0 0 6px 0; color:#38bdf8;">📋 లైవ్ ఆర్డర్లు & పేమెంట్ వివరాలు</h2>
-    <p style="font-size:13px; color:#94a3b8; margin:0;">కస్టమర్, వర్కర్, పూర్తి పేమెంట్ విభజన మరియు OTP వివరాలు.</p>
+    <h2 style="margin:0 0 8px 0; color:#38bdf8; font-size:18px;">🔍 కస్టమర్ & వర్కర్ సెర్చ్ పోర్టల్</h2>
+    <div class="setting-row">
+      <input type="text" id="globalSearchInput" placeholder="రాము లేదా 9876543210">
+      <button class="save-btn" onclick="executeGlobalSearch()">🔍 Search</button>
+    </div>
+  </div>
+  <div id="searchResultsContainer"></div>
+</section>
+
+<section id="tabBookings" class="hidden">
+  <div class="card" style="padding:12px;">
+    <h2 style="margin:0 0 4px 0; color:#38bdf8; font-size:18px;">📋 లైవ్ ఆర్డర్లు & బుకింగ్ కన్ఫర్మ్ ఛార్జ్</h2>
   </div>
   <div id="adminBookingsList"></div>
 </section>
 
-<!-- WORKERS DIRECTORY & UPI INFO -->
 <section id="tabWorkers" class="hidden">
-  <div class="card">
-    <h2 style="margin:0 0 6px 0; color:#38bdf8;">👷 వర్కర్ల లిస్ట్ & పేమెంట్ UPI వివరాలు</h2>
+  <div class="card" style="padding:12px;">
+    <h2 style="margin:0; color:#38bdf8; font-size:18px;">👷 వర్కర్ల లిస్ట్ & UPI వివరాలు</h2>
   </div>
   <div id="adminWorkersList"></div>
 </section>
 
-<!-- LIVE RADAR MAP -->
 <section id="tabLiveMap" class="hidden">
   <div class="card">
-    <h2 style="margin:0 0 10px 0; color:#38bdf8;">🗺️ లైవ్ రాడార్ మ్యాప్ (Live Map)</h2>
+    <h2 style="margin:0 0 10px 0; color:#38bdf8; font-size:18px;">🗺️ లైవ్ రాడార్ మ్యాప్</h2>
     <div id="adminMasterMap"></div>
   </div>
 </section>
 
-<!-- SETTINGS -->
 <section id="tabSettings" class="hidden">
   <div class="card">
-    <h2 style="margin:0 0 6px 0; color:#38bdf8;">⚙️ ప్రైసింగ్, వేజ్ క్యాప్ & QR సెట్టింగ్స్</h2>
+    <h2 style="margin:0 0 12px 0; color:#38bdf8; font-size:18px;">⚙️ ప్రైసింగ్, సపోర్ట్ & UPI సెట్టింగ్స్</h2>
 
-    <!-- 1. Global Worker Max Wage Cap Limit -->
-    <div class="setting-box" style="border:1.5px solid #fde047;">
-      <label style="color:#fde047;">🛡️ వర్కర్ & హెల్పర్ గరిష్ట కూలీ పరిమితి (Max Base Wage Limit in ₹):</label>
+    <!-- ✨ మాస్టర్ UPI ID సెట్టింగ్ బాక్స్ -->
+    <div class="setting-box" style="border:1.5px solid #22c55e;">
+      <label style="color:#22c55e;">💳 మీ డైరెక్ట్ బ్యాంక్ UPI ID (అడ్వాన్స్ పేమెంట్స్ కోసం):</label>
       <div class="setting-row">
-        <input type="number" id="cfgMaxWageCap" placeholder="e.g. 1200">
-        <button class="save-btn" style="background:#fde047; color:#000;" onclick="saveIndividualSetting('maxWageCap')">💾 Save Cap</button>
+        <input type="text" id="cfgAdminUpiId" placeholder="yourname@oksbi">
+        <button class="save-btn" style="background:#22c55e; color:#fff;" onclick="saveAdminUpiId()">💾 Save UPI ID</button>
       </div>
-      <small style="color:#94a3b8; font-size:11px; margin-top:4px; display:block;">
-        (వర్కర్లు లేదా హెల్పర్లు ఎవరైనా తమ కూలీని ఇక్కడ నిర్ణయించిన గరిష్ట మొత్తం దాటి రిజిస్టర్ చేయలేరు)
-      </small>
     </div>
 
-    <!-- 2. Admin Official Payment UPI -->
+    <!-- Global App Logo Control Box -->
     <div class="setting-box" style="border:1.5px solid #38bdf8;">
-      <label style="color:#38bdf8;">💳 కస్టమర్లు పే చేయాల్సిన అధికారిక App UPI ID (QR):</label>
-      <div class="setting-row">
-        <input type="text" id="cfgAdminUpi" placeholder="e.g. intimitra@upi">
-        <button class="save-btn" onclick="saveIndividualSetting('upi')">💾 Save UPI</button>
+      <label style="color:#38bdf8;">🖼️ అన్ని యాప్‌ల గ్లోబల్ లోగో మార్చుకోండి (Image URL / File):</label>
+      <div class="setting-row" style="margin-bottom:8px;">
+        <input type="text" id="cfgAppLogoUrl" placeholder="ఫోటో లింక్ (Image URL) ఇక్కడ పేస్ట్ చేయండి">
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="file" id="cfgAppLogoFile" accept="image/*" style="background:#1e293b; padding:8px; font-size:12px; flex:1;">
+        <button class="save-btn" onclick="saveGlobalAppLogo()">💾 Save Logo</button>
       </div>
     </div>
 
-    <!-- 3. Free Distance Threshold KM -->
-    <div class="setting-box">
-      <label>📏 ఉచిత ప్రయాణ పరిమితి (Free Limit in KM):</label>
-      <div class="setting-row">
-        <input type="number" id="cfgFreeKmThreshold" placeholder="e.g. 3">
-        <button class="save-btn" onclick="saveIndividualSetting('freeKmThreshold')">💾 Save KM</button>
+    <!-- Festival / Event Greeting Banner Broadcast Box -->
+    <div class="setting-box" style="border:1.5px solid #f59e0b;">
+      <label style="color:#f59e0b;">🎉 పండుగ లేదా ఈవెంట్ శుభాకాంక్షల బ్యానర్ (Broadcast Banner):</label>
+      <input type="text" id="cfgFestivalTitle" placeholder="శీర్షిక (ఉదా: వినాయక చవితి శుభాకాంక్షలు!)" style="margin-bottom:8px;">
+      <textarea id="cfgFestivalText" placeholder="శుభాకాంక్షల మెసేజ్ రాయండి..." style="height:70px; resize:none; margin-bottom:8px;"></textarea>
+      <div style="display:flex; gap:8px;">
+        <button class="save-btn" style="background:#f59e0b; color:#0f172a; flex:1;" onclick="saveFestivalBanner()">💾 Save Festival Banner</button>
+        <button class="save-btn" style="background:#ef4444; color:#fff;" onclick="clearFestivalBanner()">🗑️ Remove Banner</button>
       </div>
     </div>
 
-    <!-- 4. Per KM Rate -->
-    <div class="setting-box">
-      <label>🚗 ప్రయాణ దూరం ఛార్జ్ (Per KM Rate in ₹):</label>
+    <!-- కస్టమర్ రిజిస్ట్రేషన్ ఫీజు సెట్టింగ్ -->
+    <div class="setting-box" style="border:1.5px solid #34d399;">
+      <label style="color:#34d399;">📝 కొత్త కస్టమర్ రిజిస్ట్రేషన్ ఫీజు (₹):</label>
       <div class="setting-row">
-        <input type="number" id="cfgPerKmRate" placeholder="e.g. 10">
-        <button class="save-btn" onclick="saveIndividualSetting('perKm')">💾 Save</button>
+        <input type="number" id="cfgCustomerRegFee" placeholder="10">
+        <button class="save-btn" style="background:#34d399; color:#0f172a;" onclick="saveIndividualSetting('customerRegFee')">💾 Save Reg Fee</button>
       </div>
     </div>
 
-    <!-- 5. Commission Rate -->
-    <div class="setting-box">
-      <label>💼 వర్కర్ కమీషన్ పర్సంటేజ్ (%):</label>
+    <!-- ✨ పార్టనర్ / వర్కర్ రిజిస్ట్రేషన్ ఫీజు సెట్టింగ్ -->
+    <div class="setting-box" style="border:1.5px solid #34d399;">
+      <label style="color:#34d399;">👷 కొత్త పార్టనర్ రిజిస్ట్రేషన్ ఫీజు (₹):</label>
       <div class="setting-row">
-        <input type="number" id="cfgCommissionRate" placeholder="e.g. 10">
-        <button class="save-btn" onclick="saveIndividualSetting('commission')">💾 Save</button>
+        <input type="number" id="cfgPartnerRegFee" placeholder="10">
+        <button class="save-btn" style="background:#34d399; color:#0f172a;" onclick="saveIndividualSetting('partnerRegFee')">💾 Save Partner Fee</button>
       </div>
     </div>
 
-    <!-- 6. App Brand Logo -->
-    <div class="setting-box">
-      <label>🏛️ యాప్ బ్రాండ్ లోగో:</label>
-      <input type="file" id="logoUploadInput" accept="image/*" style="padding:10px; background:#1e293b; margin-bottom:8px;">
-      <div id="logoPreviewBox" style="margin:4px 0 10px 0;"></div>
-      <button class="save-btn" style="width:100%;" onclick="saveIndividualSetting('appLogo')">💾 Upload Logo</button>
+    <!-- వర్కర్ కమీషన్ పర్సంటేజ్ సెట్టింగ్ -->
+    <div class="setting-box" style="border:1.5px solid #38bdf8;">
+      <label style="color:#38bdf8;">💼 వర్కర్ కమీషన్ పర్సంటేజ్ (%):</label>
+      <div class="setting-row">
+        <input type="number" id="cfgCommissionRate" placeholder="10">
+        <button class="save-btn" onclick="saveIndividualSetting('commission')">💾 Save Commission</button>
+      </div>
     </div>
 
+    <!-- 3-డేస్ ట్రయల్ తర్వాత మంత్లీ సబ్‌స్క్రిప్షన్ ఫీజు సెట్టింగ్ -->
+    <div class="setting-box" style="border:1.5px solid #f59e0b;">
+      <label style="color:#f59e0b;">⏳ 3-డేస్ ఫ్రీ ట్రయల్ తర్వాత చెల్లించాల్సిన సబ్‌స్క్రిప్షన్ ఫీజు (₹):</label>
+      <div class="setting-row">
+        <input type="number" id="cfgTrialAfterFee" placeholder="199">
+        <button class="save-btn" style="background:#f59e0b; color:#0f172a;" onclick="saveIndividualSetting('trialAfterFee')">💾 Save Trial Fee</button>
+      </div>
+    </div>
+
+    <div class="setting-box" style="border:1.5px solid #ef4444;">
+      <label style="color:#ef4444;">🔑 మాస్టర్ అడ్మిన్ పాస్‌వర్డ్ మార్చుకోండి:</label>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <input type="password" id="cfgNewAdminPass" placeholder="కొత్త పాస్‌కోడ్ టైప్ చేయండి">
+        <button class="save-btn" style="background:#ef4444; color:#fff;" onclick="saveAdminPassword()">💾 Update Password</button>
+      </div>
+    </div>
+
+    <div class="setting-box" style="border:1.5px solid #38bdf8;">
+      <label style="color:#38bdf8;">💳 కస్టమర్ చెల్లించాల్సిన 'బుకింగ్ కన్ఫర్మ్ ఛార్జ్' (₹):</label>
+      <div class="setting-row">
+        <input type="number" id="cfgBookingConfirmFee" placeholder="50">
+        <button class="save-btn" onclick="saveIndividualSetting('bookingConfirmFee')">💾 Save Fee</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -203,6 +240,8 @@ button.success{background:#10b981;color:#fff;border:none;padding:8px 14px;border
 
 <nav id="nav" class="nav hidden">
   <button onclick="adminPage('tabOverview',this)" class="active"><b>📊</b><span>Overview</span></button>
+  <button onclick="adminPage('tabComplaints',this)" style="position:relative;"><b>🚨</b><span>సమస్యలు</span><span id="badgeComplainCount" class="hidden" style="position:absolute; top:2px; right:6px; background:#ef4444; color:#fff; font-size:9px; padding:1px 4px; border-radius:50%;">0</span></button>
+  <button onclick="adminPage('tabSearch',this)"><b>🔍</b><span>సెర్చ్</span></button>
   <button onclick="adminPage('tabBookings',this)"><b>📋</b><span>ఆర్డర్లు</span></button>
   <button onclick="adminPage('tabWorkers',this)"><b>👷</b><span>వర్కర్లు</span></button>
   <button onclick="adminPage('tabLiveMap',this)"><b>🗺️</b><span>మ్యాప్</span></button>
@@ -227,50 +266,110 @@ try {
   db = firebase.firestore();
 } catch (e){}
 
-let compressedLogoBase64 = "";
-let adminMap = null;
-let adminMarkersLayer = null;
-let cachedWorkers = [];
-let cachedBookings = [];
+let adminMasterMap = null;
 
 window.addEventListener('load', () => {
-  if(localStorage.getItem("admin_session") === "true") showAdminDashboard();
-
-  const logoInp = document.getElementById("logoUploadInput");
-  if(logoInp){
-    logoInp.addEventListener("change", function(e){
-      const file = e.target.files[0];
-      if(file){
-        const reader = new FileReader();
-        reader.onload = function(evt){
-          const img = new Image();
-          img.onload = function(){
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const maxDim = 250;
-            let width = img.width;
-            let height = img.height;
-            if (width > height) { if (width > maxDim) { height *= maxDim / width; width = maxDim; } }
-            else { if (height > maxDim) { width *= maxDim / height; height = maxDim; } }
-            canvas.width = width; canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-            compressedLogoBase64 = canvas.toDataURL("image/png", 0.85);
-            document.getElementById("logoPreviewBox").innerHTML = `<img src="${compressedLogoBase64}" style="max-height:80px; border-radius:10px; border:2px solid #38bdf8; padding:2px; background:#fff;">`;
-          };
-          img.src = evt.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+  const session = localStorage.getItem("admin_session");
+  if(session === "true"){ showAdminDashboard(); }
+  else {
+    document.getElementById("adminLogin").classList.remove("hidden");
+    document.getElementById("adminApp").classList.add("hidden");
+    document.getElementById("nav").classList.add("hidden");
+    document.getElementById("hdrLogoutBtn").classList.add("hidden");
   }
+  loadLiveAdminSettings();
 });
 
 function verifyAdminLogin(){
   const pass = document.getElementById("adminPass").value.trim();
-  if(pass === "9999" || pass === "admin123"){
+  const savedPass = localStorage.getItem("admin_custom_pass") || "9999";
+  if(pass === savedPass || pass === "admin123"){
     localStorage.setItem("admin_session", "true");
     showAdminDashboard();
-  } else toast("❌ తప్పుడు పాస్‌కోడ్!");
+    toast("🔓 లాగిన్ విజయవంతమైంది!");
+  } else { toast("❌ తప్పుడు పాస్‌కోడ్!"); }
+}
+
+async function saveAdminPassword(){
+  const newPass = document.getElementById("cfgNewAdminPass").value.trim();
+  if(!newPass || newPass.length < 4) return toast("⚠️ కనీసం 4 అంకెలు ఉండే పాస్‌వర్డ్ ఇవ్వండి!");
+  localStorage.setItem("admin_custom_pass", newPass);
+  if(db){
+    await db.collection("settings").doc("general").set({ adminPasscode: newPass, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+  }
+  document.getElementById("cfgNewAdminPass").value = "";
+  toast("✅ అడ్మిన్ పాస్‌వర్డ్ విజయవంతంగా మార్చబడింది!");
+}
+
+async function saveAdminUpiId() {
+  const upiId = document.getElementById("cfgAdminUpiId").value.trim();
+  if(!upiId.includes("@")) return toast("⚠️ సరైన UPI ID ఇవ్వండి (ఉదా: name@oksbi)");
+  if(!db) return;
+  await db.collection("settings").doc("general").set({
+    adminUpiId: upiId,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true });
+  toast("✅ అడ్మిన్ UPI ID విజయవంతంగా సేవ్ చేయబడింది!");
+}
+
+async function saveGlobalAppLogo() {
+  let logoUrl = document.getElementById("cfgAppLogoUrl").value.trim();
+  const fileInput = document.getElementById("cfgAppLogoFile");
+
+  if(fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Img = e.target.result;
+      await updateLogoInFirestore(base64Img);
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  } else if(logoUrl) {
+    await updateLogoInFirestore(logoUrl);
+  } else {
+    toast("⚠️ ఫోటో లింక్ ఇవ్వండి లేదా ఫైల్ సెలెక్ట్ చేయండి!");
+  }
+}
+
+async function updateLogoInFirestore(url) {
+  if(!db) return;
+  try {
+    await db.collection("settings").doc("general").set({
+      appLogo: url,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    toast("✅ అన్ని యాప్‌ల లోగో విజయవంతంగా మార్చబడింది!");
+    document.getElementById("cfgAppLogoUrl").value = "";
+    document.getElementById("cfgAppLogoFile").value = "";
+  } catch(e) {
+    toast("⚠️ లోగో సేవ్ చేయడంలో సమస్య ఏర్పడింది.");
+  }
+}
+
+async function saveFestivalBanner() {
+    const title = document.getElementById("cfgFestivalTitle").value.trim();
+    const text = document.getElementById("cfgFestivalText").value.trim();
+    if(!text) return toast("⚠️ శుభాకాంక్షల మెసేజ్ రాయండి!");
+    if(!db) return;
+
+    await db.collection("settings").doc("general").set({
+        festivalBannerTitle: title || "🎉 ప్రత్యేక శుభాకాంక్షలు!",
+        festivalBannerText: text,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    toast("✅ పండుగ బ్యానర్ విజయవంతంగా పంపబడింది!");
+}
+
+async function clearFestivalBanner() {
+    if(!db) return;
+    await db.collection("settings").doc("general").set({
+        festivalBannerTitle: "",
+        festivalBannerText: "",
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    document.getElementById("cfgFestivalTitle").value = "";
+    document.getElementById("cfgFestivalText").value = "";
+    toast("🗑️ పండుగ బ్యానర్ తొలగించబడింది!");
 }
 
 function showAdminDashboard(){
@@ -278,10 +377,9 @@ function showAdminDashboard(){
   document.getElementById("adminApp").classList.remove("hidden");
   document.getElementById("nav").classList.remove("hidden");
   document.getElementById("hdrLogoutBtn").classList.remove("hidden");
-
   loadLiveAdminSettings();
   listenToBookings();
-  listenToWorkers();
+  listenToComplaintsAndSupport();
 }
 
 function adminPage(id, btn){
@@ -289,7 +387,17 @@ function adminPage(id, btn){
   document.getElementById(id).classList.remove("hidden");
   document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
   if(btn) btn.classList.add("active");
-  if(id === "tabLiveMap") initOrRefreshAdminMap();
+
+  if(id === 'tabLiveMap') {
+    setTimeout(() => {
+      if(!adminMasterMap) {
+        adminMasterMap = L.map('adminMasterMap', { attributionControl: false }).setView([17.3850, 78.4867], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(adminMasterMap);
+      } else {
+        adminMasterMap.invalidateSize();
+      }
+    }, 250);
+  }
   window.scrollTo(0,0);
 }
 
@@ -298,23 +406,36 @@ function loadLiveAdminSettings(){
   db.collection("settings").doc("general").onSnapshot(doc => {
     if(doc.exists){
       const d = doc.data();
-      const maxWage = (d.maxWageCap !== undefined) ? d.maxWageCap : 1200;
+      const regFee = (d.customerRegFee !== undefined) ? d.customerRegFee : 10;
+      const partnerRegFee = (d.partnerRegFee !== undefined) ? d.partnerRegFee : 10;
+      const confirmFee = (d.bookingConfirmFee !== undefined) ? d.bookingConfirmFee : 50;
+      const commission = (d.commissionRate !== undefined) ? d.commissionRate : 10;
+      const trialFee = (d.trialAfterFee !== undefined) ? d.trialAfterFee : 199;
+      const adminUpi = d.adminUpiId || "ఇంకా సెట్ చేయలేదు";
       
-      document.getElementById("cfgMaxWageCap").value = maxWage;
-      document.getElementById("cfgFreeKmThreshold").value = (d.freeKmThreshold !== undefined) ? d.freeKmThreshold : 3;
-      document.getElementById("cfgPerKmRate").value = d.perKmRate || 10;
-      document.getElementById("cfgCommissionRate").value = d.commissionRatePercent || 10;
-      document.getElementById("cfgAdminUpi").value = d.adminUpiId || "intimitra@upi";
+      document.getElementById("cfgCustomerRegFee").value = regFee;
+      document.getElementById("cfgPartnerRegFee").value = partnerRegFee;
+      document.getElementById("cfgBookingConfirmFee").value = confirmFee;
+      document.getElementById("cfgCommissionRate").value = commission;
+      document.getElementById("cfgTrialAfterFee").value = trialFee;
+      if(d.adminUpiId) document.getElementById("cfgAdminUpiId").value = d.adminUpiId;
+      if(d.festivalBannerTitle) document.getElementById("cfgFestivalTitle").value = d.festivalBannerTitle;
+      if(d.festivalBannerText) document.getElementById("cfgFestivalText").value = d.festivalBannerText;
 
-      document.getElementById("dashMaxWage").innerText = "₹" + maxWage;
-      document.getElementById("dashAdminUpi").innerText = d.adminUpiId || "intimitra@upi";
-      document.getElementById("dashFreeKm").innerText = ((d.freeKmThreshold !== undefined) ? d.freeKmThreshold : 3) + " KM";
-      document.getElementById("dashComm").innerText = (d.commissionRatePercent || 10) + "%";
+      document.getElementById("dashRegFee").innerText = "₹" + regFee;
+      document.getElementById("dashPartnerRegFee").innerText = "₹" + partnerRegFee;
+      document.getElementById("dashConfirmFee").innerText = "₹" + confirmFee;
+      document.getElementById("dashTrialFee").innerText = "₹" + trialFee;
+      document.getElementById("dashAdminUpiDisplay").innerText = adminUpi;
 
-      if(d.appLogoUrl){
-        document.getElementById("hdrLogoImg").src = d.appLogoUrl;
-        document.getElementById("hdrLogoImg").classList.remove("hidden");
-        document.getElementById("hdrFallbackIcon").classList.add("hidden");
+      if(d.appLogo) {
+        const logoImg = document.getElementById("hdrLogoImg");
+        const fallbackIcon = document.getElementById("hdrFallbackIcon");
+        if(logoImg && fallbackIcon) {
+          logoImg.src = d.appLogo;
+          logoImg.classList.remove("hidden");
+          fallbackIcon.classList.add("hidden");
+        }
       }
     }
   });
@@ -323,174 +444,66 @@ function loadLiveAdminSettings(){
 async function saveIndividualSetting(type){
   if(!db) return;
   const updateData = { updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  
+  if(type === 'customerRegFee'){
+    updateData.customerRegFee = Number(document.getElementById("cfgCustomerRegFee").value) || 10;
+    await db.collection("settings").doc("general").set(updateData, { merge: true });
+    toast("✅ కస్టమర్ రిజిస్ట్రేషన్ ఫీజు సేవ్ అయ్యింది!");
+  } else if(type === 'partnerRegFee'){
+    updateData.partnerRegFee = Number(document.getElementById("cfgPartnerRegFee").value) || 10;
+    await db.collection("settings").doc("general").set(updateData, { merge: true });
+    toast("✅ పార్టనర్ రిజిస్ట్రేషన్ ఫీజు సేవ్ అయ్యింది!");
+  } else if(type === 'commission'){
+    updateData.commissionRate = Number(document.getElementById("cfgCommissionRate").value) || 10;
+    await db.collection("settings").doc("general").set(updateData, { merge: true });
+    toast("✅ వర్కర్ కమీషన్ పర్సంటేజ్ సేవ్ అయ్యింది!");
+  } else if(type === 'bookingConfirmFee'){
+    updateData.bookingConfirmFee = Number(document.getElementById("cfgBookingConfirmFee").value) || 50;
+    await db.collection("settings").doc("general").set(updateData, { merge: true });
+    toast("✅ బుకింగ్ కన్ఫర్మ్ ఛార్జ్ సేవ్ అయ్యింది!");
+  } else if(type === 'trialAfterFee'){
+    updateData.trialAfterFee = Number(document.getElementById("cfgTrialAfterFee").value) || 199;
+    await db.collection("settings").doc("general").set(updateData, { merge: true });
+    toast("✅ ట్రయల్ తర్వాత చెల్లించే ఫీజు సేవ్ అయ్యింది!");
+  }
+}
 
-  if(type === 'maxWageCap'){
-    const val = Number(document.getElementById("cfgMaxWageCap").value) || 1200;
-    updateData.maxWageCap = val;
-    await db.collection("settings").doc("general").set(updateData, { merge: true });
-    toast(`✅ గరిష్ట కూలీ పరిమితి: ₹${val} సేవ్ అయ్యింది!`);
-  }
-  else if(type === 'upi'){
-    const val = document.getElementById("cfgAdminUpi").value.trim();
-    if(!val) return toast("⚠️ UPI ID ఇవ్వండి!");
-    updateData.adminUpiId = val;
-    await db.collection("settings").doc("general").set(updateData, { merge: true });
-    toast("✅ అధికారిక QR UPI ID సేవ్ అయ్యింది: " + val);
-  }
-  else if(type === 'freeKmThreshold'){
-    const val = Number(document.getElementById("cfgFreeKmThreshold").value) || 0;
-    updateData.freeKmThreshold = val;
-    await db.collection("settings").doc("general").set(updateData, { merge: true });
-    toast(`✅ ${val} KM ఉచిత పరిమితి సేవ్ అయ్యింది!`);
-  }
-  else if(type === 'perKm'){
-    const val = Number(document.getElementById("cfgPerKmRate").value) || 0;
-    updateData.perKmRate = val;
-    await db.collection("settings").doc("general").set(updateData, { merge: true });
-    toast("✅ Per KM రేటు సేవ్ అయ్యింది: ₹" + val);
-  }
-  else if(type === 'commission'){
-    const val = Number(document.getElementById("cfgCommissionRate").value) || 0;
-    updateData.commissionRatePercent = val;
-    await db.collection("settings").doc("general").set(updateData, { merge: true });
-    toast("✅ కమీషన్ సేవ్ అయ్యింది: " + val + "%");
-  }
-  else if(type === 'appLogo'){
-    if(!compressedLogoBase64) return toast("⚠️ లోగో ఎంచుకోండి!");
-    updateData.appLogoUrl = compressedLogoBase64;
-    await db.collection("settings").doc("general").set(updateData, { merge: true });
-    toast("✅ లోగో సేవ్ అయ్యింది!");
-  }
+function executeGlobalSearch(){
+  const container = document.getElementById("searchResultsContainer");
+  container.innerHTML = `<div class="card" style="text-align:center; color:#38bdf8;">ఫలితాలు లోడ్ అవుతున్నాయి...</div>`;
+}
+
+function listenToComplaintsAndSupport(){
+  if(!db) return;
+  db.collection("support").orderBy("createdAt", "desc").onSnapshot(snap => {
+    let pendingCount = 0;
+    snap.forEach(doc => { if(doc.data().status === 'Pending') pendingCount++; });
+    const badge = document.getElementById("badgeComplainCount");
+    if(pendingCount > 0){ badge.innerText = pendingCount; badge.classList.remove("hidden"); }
+    else { badge.classList.add("hidden"); }
+  });
 }
 
 function listenToBookings(){
   if(!db) return;
   db.collection("bookings").orderBy("createdAt", "desc").onSnapshot(snap => {
-    let totalRevenue = 0;
-    let totalAdminComm = 0;
-    let totalWorkerPay = 0;
+    let totalConfirmFee = 0, totalAdminComm = 0, totalWorkerPay = 0;
     const list = [];
-
     snap.forEach(doc => {
-      const d = doc.data();
-      list.push(d);
-
-      const bill = Number(d.totalWorkerWage || 350);
-      const comm = Number(d.platformFeeDeducted || Math.round((bill * 10) / 100));
-      const workerShare = Number(d.workerNetPayout || (bill - comm));
-
-      totalRevenue += bill;
-      totalAdminComm += comm;
-      totalWorkerPay += workerShare;
+      const d = doc.data(); list.push(d);
+      totalConfirmFee += Number(d.bookingConfirmFee || 50);
+      totalAdminComm += Number(d.platformFeeDeducted || 35);
+      totalWorkerPay += Number(d.workerNetPayout || 315);
     });
-
-    cachedBookings = list;
     document.getElementById("statTotalBookings").innerText = list.length;
-    document.getElementById("statTotalRevenue").innerText = "₹" + totalRevenue;
+    document.getElementById("statTotalConfirmFee").innerText = "₹" + totalConfirmFee;
     document.getElementById("statAdminCommission").innerText = "₹" + totalAdminComm;
     document.getElementById("statWorkerPayouts").innerText = "₹" + totalWorkerPay;
-
-    const div = document.getElementById("adminBookingsList");
-    if(!list.length){
-      div.innerHTML = `<div class="card" style="text-align:center; color:#94a3b8;">ఆర్డర్లు ఏవీ లేవు.</div>`;
-      return;
-    }
-
-    div.innerHTML = list.map(b => {
-      const bill = Number(b.totalWorkerWage || 350);
-      const comm = Number(b.platformFeeDeducted || Math.round((bill * 10) / 100));
-      const workerShare = Number(b.workerNetPayout || (bill - comm));
-      const custLoc = b.customerLocation || {};
-      const mapUrl = custLoc.lat ? `https://maps.google.com/?q=${custLoc.lat},${custLoc.lng}` : `https://maps.google.com/?q=${encodeURIComponent(b.address || '')}`;
-
-      return `
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0; color:#38bdf8;">${b.service}</h3>
-            <span class="badge ${b.status === 'Work Completed' ? 'badge-success' : 'badge-pending'}">${b.status}</span>
-          </div>
-
-          <div style="margin:8px 0 4px 0; font-size:14px;">
-            👤 కస్టమర్: <b>${b.customerName}</b> (📞 <a href="tel:${b.customerPhone}" style="color:#38bdf8;">${b.customerPhone}</a>)
-          </div>
-          <div style="font-size:13px; color:#94a3b8;">📍 అడ్రస్: ${custLoc.address || b.address || 'Local'} | 📏 దూరం: <b>${b.distanceKm || '1.0'} KM</b></div>
-
-          <div style="margin-top:6px; font-size:13px; color:#cbd5e1;">
-            👷 వర్కర్: <b>${b.workerName || (b.assignedWorker ? b.assignedWorker.name : 'Assigned')}</b> 
-            (📞 ${b.workerPhone || (b.assignedWorker ? b.assignedWorker.phone : '')})
-          </div>
-          <div style="font-size:12px; color:#f59e0b;">📲 వర్కర్ UPI: <b>${b.workerUpi || (b.assignedWorker ? b.assignedWorker.upi : 'Pending')}</b></div>
-
-          <div class="tx-box">
-            <div style="display:flex; justify-content:space-between;">
-              <span>💳 కస్టమర్ మొత్తం పేమెంట్:</span>
-              <b style="color:#38bdf8; font-size:14px;">₹${bill}</b>
-            </div>
-            <div class="tx-grid">
-              <div style="color:#34d399;">🏛️ అడ్మిన్ కమీషన్: <b>₹${comm}</b></div>
-              <div style="color:#f59e0b;">👷 వర్కర్‌కు వెళ్లాల్సింది: <b>₹${workerShare}</b></div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-            <a href="${mapUrl}" target="_blank" style="color:#38bdf8; font-size:12px; text-decoration:none;">🗺️ View Location on Map</a>
-            <span style="font-size:12px; color:#94a3b8;">🔑 Completion OTP: <b>${b.completionOtp}</b></span>
-          </div>
-        </div>
-      `;
-    }).join("");
   });
 }
 
-function listenToWorkers(){
-  if(!db) return;
-  db.collection("workers").onSnapshot(snap => {
-    const list = [];
-    snap.forEach(doc => list.push(doc.data()));
-    cachedWorkers = list;
-
-    const div = document.getElementById("adminWorkersList");
-    if(!list.length){
-      div.innerHTML = `<div class="card" style="text-align:center; color:#94a3b8;">వర్కర్లు ఇంకా రిజిస్టర్ అవ్వలేదు.</div>`;
-      return;
-    }
-
-    div.innerHTML = list.map(w => `
-      <div class="card">
-        <h3 style="margin:0; color:#f59e0b;">👷 ${w.name} (${w.service})</h3>
-        <p style="margin:6px 0; font-size:14px;">📞 ఫోన్: <b>${w.phone}</b> | 💰 కూలీ: <b>₹${w.wage || 350}</b></p>
-        <div style="background:#0f172a; padding:8px 12px; border-radius:10px; border:1px solid #334155; font-size:13px; color:#34d399;">
-          📲 పేమెంట్స్ UPI ID: <b>${w.upi || `${w.phone}@upi`}</b>
-        </div>
-      </div>
-    `).join("");
-  });
-}
-
-function initOrRefreshAdminMap(){
-  setTimeout(() => {
-    if(!adminMap){
-      adminMap = L.map('adminMasterMap').setView([17.3850, 78.4867], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(adminMap);
-      adminMarkersLayer = L.layerGroup().addTo(adminMap);
-    } else adminMap.invalidateSize();
-  }, 250);
-}
-
-function adminLogout(){
-  localStorage.removeItem("admin_session");
-  location.reload();
-}
-
-let toastTimer;
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.classList.remove("hidden");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.add("hidden"), 3000);
-}
+function adminLogout(){ localStorage.getItem("admin_session") ? localStorage.removeItem("admin_session") : localStorage.clear(); location.reload(); }
+function toast(msg){ const t = document.getElementById("toast"); t.innerText = msg; t.classList.remove("hidden"); setTimeout(() => t.classList.add("hidden"), 3000); }
 </script>
-
 </body>
 </html>
